@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Komplett fertig – {{ kuerzel }}</h1>
+
+<form action="/dashboard" method="get" class="back-form">
+    <button type="submit" class="back-button">← Zurück zum Dashboard</button>
+</form>
+
+{% if groups|length == 0 %}
+    <p>Keine fertigen Artikel gefunden.</p>
+{% else %}
+    {% for g in groups %}
+    <div class="bundle bundle-disabled">
+
+        <div class="bundle-header">
+            <div class="bundle-title">
+                {{ g["Bew.-Artikel"] }} — {{ g["Durchm."] }} mm × {{ g["Länge"] }} mm
+            </div>
+            <div class="bundle-subtitle">
+                Gesamt: {{ g["total_menge"] }} Stk
+            </div>
+        </div>
+
+        <ul class="bundle-prodids">
+            {% for pid in g["prodids"] %}
+            <li>
+                <span class="prodid-label">ProdID {{ pid }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+
+    </div>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}

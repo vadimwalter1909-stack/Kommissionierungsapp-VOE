@@ -1,0 +1,145 @@
+{
+  "H1": {
+    "kuerzel": [
+      "TEIND",
+      "WSWIND",
+      "DEFDOA",
+      "SOSWIND",
+      "WASWIND",
+      "WABWIND",
+      "WAATOA",
+      "WAOA",
+      "FWEOA",
+      "WAPH",
+      "SOPH",
+      "WASZIND",
+      "DESZIND",
+      "BFTIF",
+      "WAOI",
+      "SWEOKOA"
+    ],
+    "ladungstraeger": [
+      "GIBO1F_1_1F",
+      "GIBO1F_2_1F",
+      "GIBO1F_3_1F",
+      "GIBO1F_4_1F",
+      "GIBO1F_5_1F",
+      "GIBO1F_6_1F",
+      "GIBO1F_7_1F",
+      "GIBO1F_8_1F",
+      "GIBO2F_1_F1",
+      "GIBO2F_1_F2",
+      "GIBO2F_2_F1",
+      "GIBO2F_2_F2",
+      "GIBO2F_3_F1",
+      "GIBO2F_3_F2",
+      "GIBO2F_4_F1",
+      "GIBO2F_4_F2",
+      "GIBO2F_5_F1",
+      "GIBO2F_5_F2",
+      "GIBO2F_6_F1",
+      "GIBO2F_6_F2",
+      "GIBO2F_7_F1",
+      "GIBO2F_7_F2",
+      "GIBO2F_8_F1",
+      "GIBO2F_8_F2",
+      "WAG_1_F1",
+      "WAG_1_F2",
+      "WAG_1_F3",
+      "WAG_1_F4",
+      "WAG_1_F5"
+    ]
+  },
+
+  "H5": {
+    "kuerzel": [
+      "TEIND",
+      "WSWIND",
+      "DEFDOA",
+      "SOSWIND",
+      "WASWIND",
+      "WABWIND",
+      "WAATOA",
+      "WAOA",
+      "FWEOA",
+      "WAPH",
+      "SOPH",
+      "WASZIND",
+      "DESZIND",
+      "BFTIF",
+      "WAOI",
+      "SWEOKOA"
+    ],
+    "ladungstraeger": [
+      "GIBO1F_1_1F",
+      "GIBO1F_2_1F",
+      "GIBO1F_3_1F",
+      "GIBO1F_4_1F",
+      "GIBO1F_5_1F",
+      "GIBO1F_6_1F",
+      "GIBO1F_7_1F",
+      "GIBO1F_8_1F",
+      "GIBO2F_1_F1",
+      "GIBO2F_1_F2",
+      "GIBO2F_2_F1",
+      "GIBO2F_2_F2",
+      "GIBO2F_3_F1",
+      "GIBO2F_3_F2",
+      "GIBO2F_4_F1",
+      "GIBO2F_4_F2",
+      "GIBO2F_5_F1",
+      "GIBO2F_5_F2",
+      "GIBO2F_6_F1",
+      "GIBO2F_6_F2",
+      "GIBO2F_7_F1",
+      "GIBO2F_7_F2",
+      "GIBO2F_8_F1",
+      "GIBO2F_8_F2",
+      "WAG_1_F1",
+      "WAG_1_F2",
+      "WAG_1_F3",
+      "WAG_1_F4",
+      "WAG_1_F5"
+    ]
+  },
+
+  "H3": {
+    "kuerzel": [
+      "FUSFIND",
+      "FUIND",
+      "BAIND"
+    ],
+    "ladungstraeger": [
+      "ROWAG_1_F1_L",
+      "ROWAG_1_F2_L",
+      "ROWAG_1_F3_L",
+      "ROWAG_1_F4_L",
+      "ROWAG_1_F1_R",
+      "ROWAG_1_F2_R",
+      "ROWAG_1_F3_R",
+      "ROWAG_1_F4_R"
+    ]
+  },
+
+  "H6": {
+    "kuerzel": [
+      "UEBIND",
+      "DERDOA"
+    ],
+    "ladungstraeger": [
+      "GIBO6F_1_F1",
+      "GIBO6F_1_F2",
+      "GIBO6F_1_F3",
+      "GIBO6F_1_F4",
+      "GIBO6F_1_F5",
+      "GIBO6F_1_F6"
+    ]
+  },
+
+  "FALLBACK": {
+    "ladungstraeger": [
+      "GIBO1F",
+      "WAG"
+    ]
+  }
+}

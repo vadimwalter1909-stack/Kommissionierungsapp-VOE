@@ -1,0 +1,148 @@
+Projektstand – Kommissionierungs‑/Produktions‑App (Stand heute)
+(Projekt‑Prompt zum Wiederverwenden)
+
+🏗 Projektbeschreibung
+Wir entwickeln eine webbasierte Produktions‑ und Logistik‑App (FastAPI + Jinja2 + HTML/CSS), die Excel‑Daten einliest, Produktionsaufträge gruppiert, visuell darstellt und deren Bearbeitungsstatus inkl. Ladungsträgern verwaltet.
+
+Die App besteht aus:
+
+Excel‑Upload
+
+Produktionsübersicht (Kacheln)
+
+Produktions‑Detailseite
+
+Logistik‑Ansicht
+
+Status‑Speicher im RAM (app.state)
+
+Ladungsträger‑Zuweisung über JSON
+
+📥 Excel‑Verarbeitung
+Beim Upload werden folgende Schritte ausgeführt:
+
+Pflichtspalten geprüft
+
+Kürzel_clean erzeugt (CP‑ entfernen, trimmen, uppercase)
+
+Halle über hallen_mapping.json bestimmt
+
+Referenz_clean normalisiert
+
+Aufträge in drei Bereiche getrennt:
+
+Produktion (prod, fertigung, produktion)
+
+Lager (lager, stock)
+
+Bestellung (bestell)
+
+Produktionsdaten werden in eine Liste von Dictionaries umgewandelt:
+
+python
+{
+  "prod_id": ...,
+  "bew_artikel": ...,
+  "durchmesser": ...,
+  "laenge": ...,
+  "bedarfs_menge": ...,
+  "ref_nr": ...,
+  "halle": ...,
+  "kuerzel": ...,
+}
+Diese Struktur ist entscheidend für die Detailseite.
+
+🧱 Produktionsübersicht (Kacheln)
+Aufträge werden nach prod_id gruppiert
+
+Jede Kachel zeigt:
+
+ProdID
+
+Halle
+
+Anzahl Positionen
+
+Fortschritt (fertige_positionen / anzahl_positionen)
+
+Ladungsträger (falls gesetzt)
+
+Status (Offen / Fertig)
+
+Sortierung erfolgt nach Halle:
+
+Code
+H1 → H2 → H3 → H4 → H5 → H6 → Unbekannt
+🔍 Produktions‑Detailseite
+Zeigt alle Positionen einer ProdID
+
+Checkboxen für jede Position
+
+Fortschritt wird gespeichert in:
+
+python
+app.state.produktions_status[prod_id] = {
+    "abgehakt": [...],
+    "fertig": True/False,
+    "ladungstraeger": "...",
+}
+Ladungsträger‑Dropdown wird aus ladungstraeger.json geladen
+
+WICHTIGER Punkt (aktueller offener Task):
+Die Ladungsträger‑JSON verwendet andere Kürzel als die Excel.
+Beispiel JSON‑Keys:
+
+Code
+WAOI, UEBIND, BFTIF, SWEOKA, BFTI, BAIND, ...
+Diese kommen nicht aus der Spalte „Kürzel“.
+Wir müssen noch klären, welche Excel‑Spalte diese Werte enthält.
+
+📦 Ladungsträger‑Logik
+JSON wird über load_ladungstraeger() geladen
+
+Ladungsträger werden über das Feld kuerzel zugeordnet:
+
+python
+lt_liste = lt_data.get(kuerzel, [])
+Aktuell bleibt das Dropdown leer, weil die Excel‑Kürzel nicht zu den JSON‑Keys passen
+→ Offener Punkt für morgen
+
+🧭 Offene Punkte / To‑Dos
+🔥 1. Richtige Zuordnung für Ladungsträger finden
+Wir müssen herausfinden:
+
+In welcher Excel‑Spalte stehen die JSON‑Kürzel (WAOI, UEBIND, BFTIF …)?
+
+Sobald das klar ist, wird die Ladungsträger‑Logik funktionieren.
+
+2. Optional:
+PDF‑Export
+
+Mobile‑Optimierung
+
+Dashboard‑Erweiterung
+
+Persistente Speicherung (SQLite statt RAM)
+
+🧩 Wichtige Dateien
+main.py → Backend‑Logik
+
+produktion_overview.html → Kachelübersicht
+
+produktion_detail.html → Detailseite
+
+hallen_mapping.json → Zuordnung Kürzel → Halle
+
+ladungstraeger.json → Zuordnung Kürzel → Ladungsträger
+
+🧠 Kurzprompt zum Wiederverwenden
+Wenn du mich später wieder auf Stand bringen willst, reicht dieser Satz:
+
+„Hier ist der Projektstand der Kommissionierungs‑App, bitte wieder vollständig einlesen und weiterarbeiten.“
+
+Und dann fügst du einfach die Zusammenfassung oben ein.
+
+Wenn du morgen weitermachst, starten wir direkt mit dem wichtigsten Punkt:
+👉 Welche Excel‑Spalte enthält die JSON‑Kürzel?
+
+Genieß deinen Feierabend, Vadim.

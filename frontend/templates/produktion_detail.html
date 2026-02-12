@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Produktion – {{ kuerzel }}</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=1">
+</head>
+
+<body>
+
+<h1>Produktion – {{ kuerzel }}</h1>
+
+<form action="/produktion" method="get" class="back-form">
+    <button type="submit" class="back-button">← Zur Übersicht</button>
+</form>
+
+{% set alle_fertig = true %}
+{% for g in groups %}
+    {% if g.status != "fertig" %}
+        {% set alle_fertig = false %}
+    {% endif %}
+{% endfor %}
+
+{% for g in groups %}
+<div class="bundle" data-status="{{ g.status }}">
+
+    <div class="bundle-header">
+        <div class="bundle-title">
+            {{ g.bew_artikel }} — {{ g.durchmesser }} mm × {{ g.laenge }} mm
+        </div>
+        <div class="bundle-subtitle">
+            Gesamt: {{ g.anzahl_stk }} Stk
+        </div>
+    </div>
+
+    <ul class="bundle-prodids">
+        {% for p in g.prodids %}
+        <li>
+            <span class="prodid-label">ProdID {{ p.prodid }}</span>
+            <span class="prodid-count">{{ p.anzahl }} Stk</span>
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% if g.status != "fertig" %}
+    <form method="post" action="/produktion/buendel_fertig" class="bundle-form">
+        <input type="hidden" name="kuerzel" value="{{ kuerzel }}">
+        {% for rk in g.row_keys %}
+        <input type="hidden" name="row_keys" value="{{ rk }}">
+        {% endfor %}
+        <button type="submit" class="bundle-button">Bündel fertig</button>
+    </form>
+    {% else %}
+    <div class="bundle-done-hint">Bereits fertig</div>
+    {% endif %}
+
+</div>
+{% endfor %}
+
+</body>
+</html>

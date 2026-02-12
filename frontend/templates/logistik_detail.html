@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Logistik – {{ kuerzel }}</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=1">
+</head>
+
+<body>
+
+<h1>Logistik – {{ kuerzel }}</h1>
+
+<form action="/logistik" method="get" class="back-form">
+    <button type="submit" class="back-button">← Zur Übersicht</button>
+</form>
+
+
+{# =========================================================
+   1) PRODUKTIONS-LADUNGSTRÄGER
+   ========================================================= #}
+
+{% if prod_fertig and not prod_ausgeliefert %}
+<div class="bundle bundle-ready">
+
+    <div class="bundle-header">
+        <div class="bundle-title">
+            Produktions‑Ladungsträger – Bereit zur Auslieferung
+        </div>
+        <div class="bundle-subtitle">
+            Alle Produktionsartikel wurden fertig gemeldet.
+        </div>
+    </div>
+
+    <ul class="bundle-prodids">
+        {% for p in prod_buendel %}
+        <li>
+            <span class="prodid-label">ProdID {{ p.prodid }}</span>
+            <span class="prodid-count">{{ p.anzahl }} Stk</span>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <form action="/logistik/ausliefern_produktionsladung" method="post" class="fertig-form">
+        <input type="hidden" name="kuerzel" value="{{ kuerzel }}">
+
+        <label for="zielort_prod">Bestimmungsort:</label>
+        <select name="zielort" id="zielort_prod" required>
+            {% for z in zielorte %}
+                <option value="{{ z }}">{{ z }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="fertig-button">Produktions‑Ladungsträger ausliefern</button>
+    </form>
+
+</div>
+{% endif %}
+
+
+{% if prod_ausgeliefert %}
+<div class="bundle bundle-disabled">
+
+    <div class="bundle-header">
+        <div class="bundle-title">
+            Produktions‑Ladungsträger – Ausgeliefert
+        </div>
+        <div class="bundle-subtitle">
+            Zielort: <strong>{{ zielort_prod }}</strong>
+        </div>
+    </div>
+
+    <div class="bundle-done-hint">Dieser Produktions‑Ladungsträger wurde bereits ausgeliefert.</div>
+
+</div>
+{% endif %}
+
+
+
+{# =========================================================
+   2) LOGISTIK-LADUNGSTRÄGER
+   ========================================================= #}
+
+{% if log_fertig and not log_ausgeliefert %}
+<div class="bundle bundle-ready">
+
+    <div class="bundle-header">
+        <div class="bundle-title">
+            Logistik‑Ladungsträger – Bereit zur Auslieferung
+        </div>
+        <div class="bundle-subtitle">
+            Alle Lagerartikel wurden kommissioniert.
+        </div>
+    </div>
+
+    <ul class="bundle-prodids">
+        {% for p in log_buendel %}
+        <li>
+            <span class="prodid-label">{{ p.bew_artikel }}</span>
+            <span class="prodid-count">{{ p.anzahl }} Stk</span>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <form action="/logistik/ausliefern_logistikladung" method="post" class="fertig-form">
+        <input type="hidden" name="kuerzel" value="{{ kuerzel }}">
+
+        <label for="zielort_log">Bestimmungsort:</label>
+        <select name="zielort" id="zielort_log" required>
+            {% for z in zielorte %}
+                <option value="{{ z }}">{{ z }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="fertig-button">Logistik‑Ladungsträger ausliefern</button>
+    </form>
+
+</div>
+{% endif %}
+
+
+{% if log_ausgeliefert %}
+<div class="bundle bundle-disabled">
+
+    <div class="bundle-header">
+        <div class="bundle-title">
+            Logistik‑Ladungsträger – Ausgeliefert
+        </div>
+        <div class="bundle-subtitle">
+            Zielort: <strong>{{ zielort_log }}</strong>
+        </div>
+    </div>
+
+    <div class="bundle-done-hint">Dieser Logistik‑Ladungsträger wurde bereits ausgeliefert.</div>
+
+</div>
+{% endif %}
+
+
+
+{# =========================================================
+   3) LOGISTIK-BÜNDEL – KOMMISSIONIERUNG
+   ========================================================= #}
+
+{% for g in groups %}
+<div class="bundle {% if g.status == 'fertig' %}bundle-disabled{% endif %}" data-status="{{ g.status }}">
+
+    <div class="bundle-header">
+        <div class="bundle-title">
+            {{ g.bew_artikel }} — {{ g.durchmesser }} mm × {{ g.laenge }} mm
+        </div>
+        <div class="bundle-subtitle">
+            Gesamt: {{ g.anzahl_stk }} Stk
+        </div>
+    </div>
+
+    <ul class="bundle-prodids">
+        {% for p in g.prodids %}
+        <li>
+            <span class="prodid-label">{{ p.prodid }}</span>
+            <span class="prodid-count">{{ p.anzahl }} Stk</span>
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% if g.status == "fertig" %}
+        <div class="bundle-done-hint">Bereits kommissioniert</div>
+    {% else %}
+        <form action="/logistik/buendel_fertig" method="post" class="fertig-form">
+            <input type="hidden" name="kuerzel" value="{{ kuerzel }}">
+            {% for key in g.row_keys %}
+                <input type="hidden" name="row_keys" value="{{ key }}">
+            {% endfor %}
+            <button type="submit" class="fertig-button">Fertig melden</button>
+        </form>
+    {% endif %}
+
+</div>
+{% endfor %}
+
+</body>
+</html>

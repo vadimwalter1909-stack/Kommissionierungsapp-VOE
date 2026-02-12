@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Logistik – Übersicht</h1>
+
+{% if tiles|length == 0 %}
+    <p>Keine Logistikdaten gefunden.</p>
+{% else %}
+
+<div class="tile-container">
+
+    {% for tile in tiles %}
+    <a href="/logistik/{{ tile.kuerzel }}" class="tile tile-{{ tile.status }}">
+
+        <div class="tile-left">
+            <h2 class="tile-title">
+                {{ tile.kuerzel }}
+            </h2>
+
+            <p class="tile-info">Positionen: {{ tile.anzahl_positionen }}</p>
+            <p class="tile-info">Fertig: {{ tile.fertige_positionen }}</p>
+        </div>
+
+        <div class="tile-right">
+            <span class="tile-icon">{{ tile.icon }}</span>
+        </div>
+
+    </a>
+    {% endfor %}
+
+</div>
+
+{% endif %}
+
+{% endblock %}

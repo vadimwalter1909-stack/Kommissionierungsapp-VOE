@@ -1,0 +1,281 @@
+/* ---------------------------------------------------------
+   Grundlayout
+--------------------------------------------------------- */
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f4f7;
+  margin: 0;
+  padding: 20px;
+  color: #222;
+}
+
+/* ---------------------------------------------------------
+   Navigation
+--------------------------------------------------------- */
+.navbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.navbar a {
+  display: inline-block;
+  padding: 10px 16px;
+  background: #0275d8;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.navbar a:hover {
+  background: #025aa5;
+}
+
+h1 {
+  margin-bottom: 25px;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------
+   Karten / Bündel
+--------------------------------------------------------- */
+.bundle {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-bottom: 28px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.10);
+  border: 1px solid #e0e0e0;
+  transition: background 0.25s ease;
+}
+
+/* Statusfarben für Bündel */
+.bundle[data-status="offen"] {
+  background: #ffffff;
+}
+
+.bundle[data-status="teilweise"] {
+  background: #fff8e6;
+}
+
+.bundle[data-status="fertig"] {
+  background: #e6f7e6;
+  border-color: #b6e2b6;
+}
+
+/* ---------------------------------------------------------
+   Header
+--------------------------------------------------------- */
+.bundle-header {
+  margin-bottom: 16px;
+}
+
+.bundle-title {
+  font-size: 19px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.bundle-subtitle {
+  font-size: 15px;
+  color: #666;
+}
+
+/* ---------------------------------------------------------
+   ProdID-Liste
+--------------------------------------------------------- */
+.bundle-prodids {
+  list-style: none;
+  padding: 12px 0 0 0;
+  margin: 0 0 18px 0;
+  border-top: 1px solid #ddd;
+}
+
+.bundle-prodids li {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 15px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+}
+
+.bundle-prodids li:last-child {
+  border-bottom: none;
+}
+
+.prodid-label {
+  font-weight: 500;
+}
+
+.prodid-count {
+  color: #555;
+}
+
+/* ---------------------------------------------------------
+   Buttons
+--------------------------------------------------------- */
+.bundle-form {
+  margin-top: 12px;
+}
+
+.bundle-button {
+  background: #0275d8;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  min-height: 44px;
+  width: 100%;
+}
+
+.bundle-button:hover {
+  background: #025aa5;
+}
+
+/* Hinweis für fertige Bündel */
+.bundle-done-hint {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: #dff3df;
+  border-radius: 6px;
+  font-size: 15px;
+  color: #2d662d;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------
+   Back-Button
+--------------------------------------------------------- */
+.back-form {
+  margin-bottom: 20px;
+}
+
+.back-button {
+  width: 100%;
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  min-height: 44px;
+  text-align: center;
+}
+
+.back-button:hover {
+  background: #5a6268;
+}
+
+/* ---------------------------------------------------------
+   Mobile Optimierung
+--------------------------------------------------------- */
+@media (max-width: 600px) {
+
+  .navbar {
+    flex-direction: column;
+  }
+
+  .navbar a {
+    width: 100%;
+    text-align: center;
+    font-size: 17px;
+    padding: 14px;
+  }
+
+  .bundle {
+    padding: 18px;
+  }
+
+  .bundle-title {
+    font-size: 17px;
+  }
+
+  .bundle-subtitle {
+    font-size: 14px;
+  }
+
+  .bundle-prodids li {
+    font-size: 14px;
+  }
+
+  .bundle-button {
+    font-size: 18px;
+    padding: 14px;
+  }
+
+  .back-button {
+    font-size: 18px;
+    padding: 14px;
+  }
+}
+
+/* ---------------------------------------------------------
+   Scroll-Optimierung
+--------------------------------------------------------- */
+html, body {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ---------------------------------------------------------
+   Logistik – ausgegraute fertige Bündel
+--------------------------------------------------------- */
+.bundle-disabled {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+/* ---------------------------------------------------------
+   LOGISTIK-ÜBERSICHT – KACHELN
+--------------------------------------------------------- */
+
+.tile-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.tile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    border-radius: 10px;
+    min-width: 220px;
+    flex: 1 1 calc(33% - 16px);
+    box-sizing: border-box;
+    font-size: 17px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #fff;
+}
+
+/* Statusfarben */
+.tile-offen {
+    background-color: #6c757d; /* Grau */
+}
+
+.tile-bereit {
+    background-color: #ffc107; /* Gelb */
+    color: #000;
+}
+
+.tile-komplett {
+    background-color: #28a745; /* Grün */
+}
+
+/* Icons */
+.tile-icon {
+    font-size: 22px;
+    margin-left: 10px;
+}

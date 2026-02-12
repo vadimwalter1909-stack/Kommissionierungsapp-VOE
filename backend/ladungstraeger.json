@@ -1,0 +1,171 @@
+{
+  "FUSFIND": [
+    "ROWAG_1_L_F1",
+    "ROWAG_1_L_F2",
+    "ROWAG_1_L_F3",
+    "ROWAG_1_L_F4",
+    "ROWAG_1_L_F5",
+    "ROWAG_1_R_F1",
+    "ROWAG_1_R_F2",
+    "ROWAG_1_R_F3",
+    "ROWAG_1_R_F4",
+    "ROWAG_1_R_F5",
+    "ROWAG_2_L_F1",
+    "ROWAG_2_L_F2",
+    "ROWAG_2_L_F3",
+    "ROWAG_2_L_F4",
+    "ROWAG_2_L_F5"
+  ],
+
+  "BAIND": [
+    "GIBO_3F_1_F1",
+    "GIBO_3F_1_F2",
+    "GIBO_3F_1_F3",
+    "GIBO_3F_2_F1",
+    "GIBO_3F_2_F2",
+    "GIBO_3F_2_F3",
+    "GIBO_3F_3_F1",
+    "GIBO_3F_3_F2",
+    "GIBO_3F_3_F3",
+    "GIBO_3F_4_F1",
+    "GIBO_3F_4_F2",
+    "GIBO_3F_4_F3",
+    "GIBO_3F_5_F1",
+    "GIBO_3F_5_F2",
+    "GIBO_3F_5_F3",
+    "WAG_1_H3",
+    "WAG_2_H3"
+  ],
+
+  "WAOI": [
+    "GIBO_1_H1",
+    "GIBO_2_H1",
+    "GIBO_1_H5",
+    "GIBO_2_H5",
+    "WAG_1_H5",
+    "WAG_2_H5",
+    "WAG_1_H1",
+    "WAG_2_H1"
+  ],
+
+  "SOPH": [
+    "GIBO_6F_1_F1",
+    "GIBO_6F_1_F2",
+    "GIBO_6F_1_F3",
+    "GIBO_6F_1_F4",
+    "GIBO_6F_1_F5",
+    "GIBO_6F_1_F6",
+    "GIBO_6F_2_F1",
+    "GIBO_6F_2_F2",
+    "GIBO_6F_2_F3",
+    "GIBO_6F_2_F4",
+    "GIBO_6F_2_F5",
+    "GIBO_6F_2_F6"
+  ],
+
+  "WAATOA": [
+    "GIBO_4F_1_F1",
+    "GIBO_4F_1_F2",
+    "GIBO_4F_1_F3",
+    "GIBO_4F_1_F4",
+    "GIBO_4F_2_F1",
+    "GIBO_4F_2_F2",
+    "GIBO_4F_2_F3",
+    "GIBO_4F_2_F4"
+  ],
+
+  "BFTIF": [
+    "GIBO_2F_1_F1_H1",
+    "GIBO_2F_1_F2_H1",
+    "GIBO_2F_2_F1_H1",
+    "GIBO_2F_2_F2_H1",
+    "GIBO_2F_1_F1_H5",
+    "GIBO_2F_1_F2_H5",
+    "GIBO_2F_2_F1_H5",
+    "GIBO_2F_2_F2_H5",
+    "WAG_1_H5",
+    "WAG_2_H5",
+    "WAG_1_H1",
+    "WAG_2_H1"
+  ],
+
+  "BFTIV": [
+    "GIBO_2F_1_F1_H1",
+    "GIBO_2F_1_F2_H1",
+    "GIBO_2F_2_F1_H1",
+    "GIBO_2F_2_F2_H1",
+    "GIBO_2F_1_F1_H5",
+    "GIBO_2F_1_F2_H5",
+    "GIBO_2F_2_F1_H5",
+    "GIBO_2F_2_F2_H5",
+    "WAG_1_H5",
+    "WAG_2_H5",
+    "WAG_1_H1",
+    "WAG_2_H1"
+  ],
+
+  "SWEOKOA": [
+    "GIBO_2F_1_F1_H1",
+    "GIBO_2F_1_F2_H1",
+    "GIBO_2F_2_F1_H1",
+    "GIBO_2F_2_F2_H1",
+    "GIBO_2F_1_F1_H5",
+    "GIBO_2F_1_F2_H5",
+    "GIBO_2F_2_F1_H5",
+    "GIBO_2F_2_F2_H5",
+    "WAG_1_H5",
+    "WAG_2_H5",
+    "WAG_1_H1",
+    "WAG_2_H1"
+  ],
+
+  "UEBIND": [
+    "GIBO_H6_1",
+    "GIBO_H6_2",
+    "GIBO_H6_3",
+    "GIBO_H6_4"
+  ],
+
+  "DERDOA": [
+    "GIBO_H6_6F_1_F1",
+    "GIBO_H6_6F_1_F2",
+    "GIBO_H6_6F_1_F3",
+    "GIBO_H6_6F_1_F4",
+    "GIBO_H6_6F_1_F5",
+    "GIBO_H6_6F_1_F6",
+    "GIBO_H6_6F_2_F1",
+    "GIBO_H6_6F_2_F2",
+    "GIBO_H6_6F_2_F3",
+    "GIBO_H6_6F_2_F4",
+    "GIBO_H6_6F_2_F5",
+    "GIBO_H6_6F_2_F6",
+    "GIBO_H6_6F_3_F1",
+    "GIBO_H6_6F_3_F2",
+    "GIBO_H6_6F_3_F3",
+    "GIBO_H6_6F_3_F4",
+    "GIBO_H6_6F_3_F5",
+    "GIBO_H6_6F_3_F6",
+    "GIBO_H6_6F_4_F1",
+    "GIBO_H6_6F_4_F2",
+    "GIBO_H6_6F_4_F3",
+    "GIBO_H6_6F_4_F4",
+    "GIBO_H6_6F_4_F5",
+    "GIBO_H6_6F_4_F6",
+    "GIBO_H6_6F_5_F1",
+    "GIBO_H6_6F_5_F2",
+    "GIBO_H6_6F_5_F3",
+    "GIBO_H6_6F_5_F4",
+    "GIBO_H6_6F_5_F5",
+    "GIBO_H6_6F_5_F6",
+    "GIBO_H6_6F_6_F1",
+    "GIBO_H6_6F_6_F2",
+    "GIBO_H6_6F_6_F3",
+    "GIBO_H6_6F_6_F4",
+    "GIBO_H6_6F_6_F5",
+    "GIBO_H6_6F_6_F6",
+    "WAG_1_H6",
+    "WAG_2_H6"
+  ],
+
+  "DEFAULT": ["GIBO"]
+}

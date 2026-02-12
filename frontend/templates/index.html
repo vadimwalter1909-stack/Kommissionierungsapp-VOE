@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Startseite</h1>
+
+{# Erfolgsmeldung nach Excel-Upload #}
+{% if request.query_params.get('upload') == 'success' %}
+<div class="upload-success">
+    <div class="upload-icon">👍</div>
+    <div class="upload-text">
+        <strong>Excel erfolgreich geladen!</strong><br>
+        Zeit: {{ request.query_params.get('ts') }}<br>
+        Positionen: {{ request.query_params.get('pos') }}
+    </div>
+</div>
+{% endif %}
+
+{# Excel Upload Formular #}
+<form action="/upload_excel" method="post" enctype="multipart/form-data" class="upload-form">
+    <label for="file">Excel-Datei hochladen:</label><br><br>
+    <input type="file" id="file" name="file" accept=".xlsx,.xls" required>
+    <button type="submit">Upload</button>
+</form>
+
+<br>
+
+<p>Willkommen in der Kommissionierungs-App.</p>
+<p>Bitte wählen Sie oben einen Bereich aus.</p>
+
+{% endblock %}

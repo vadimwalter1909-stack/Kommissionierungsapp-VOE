@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Produktion – Übersicht</h1>
+
+{% if tiles|length == 0 %}
+    <p>Keine Produktionsdaten gefunden.</p>
+{% else %}
+    <div class="tile-container">
+        {% for tile in tiles %}
+            <a href="/produktion/{{ tile.kuerzel }}" class="tile tile-{{ tile.status }}">
+                <h2>{{ tile.kuerzel }}</h2>
+                <p>Aufträge: {{ tile.anzahl_auftraege }}</p>
+                <p>Positionen: {{ tile.anzahl_positionen }}</p>
+                <p>Fertig: {{ tile.fertige_positionen }}</p>
+            </a>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% endblock %}

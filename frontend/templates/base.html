@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title if title else "Kommissionierungs-App" }}</title>
+
+    <!-- Mobile Optimierung -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Professionelle UI-Schrift -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a href="/">Start</a>
+    <a href="/produktion">Produktion</a>
+    <a href="/logistik">Logistik</a>
+    <a href="/dashboard">Dashboard</a>
+    
+</nav>
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
