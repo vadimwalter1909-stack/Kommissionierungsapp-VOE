@@ -8,11 +8,18 @@
 
 <body>
 
-<h1>Logistik – {{ kuerzel }}</h1>
+{# ---------------------------------------------------------
+   Moderne Navigation
+--------------------------------------------------------- #}
+{% set page_title = "Logistik – " ~ kuerzel %}
+{% set back_url = "/logistik" %}
 
-<form action="/logistik" method="get" class="back-form">
-    <button type="submit" class="back-button">← Zur Übersicht</button>
-</form>
+<nav class="app-nav">
+    <div class="nav-left">
+        <a href="{{ back_url }}" class="nav-back">←</a>
+        <span class="nav-title">{{ page_title }}</span>
+    </div>
+</nav>
 
 
 {# =========================================================
@@ -40,7 +47,7 @@
         {% endfor %}
     </ul>
 
-    <form action="/logistik/ausliefern_produktionsladung" method="post" class="fertig-form">
+    <form action="/logistik/ausliefern_produktionsladung" method="post" class="bundle-form">
         <input type="hidden" name="kuerzel" value="{{ kuerzel }}">
 
         <label for="zielort_prod">Bestimmungsort:</label>
@@ -50,7 +57,7 @@
             {% endfor %}
         </select>
 
-        <button type="submit" class="fertig-button">Produktions‑Ladungsträger ausliefern</button>
+        <button type="submit" class="bundle-button">Produktions‑Ladungsträger ausliefern</button>
     </form>
 
 </div>
@@ -101,7 +108,7 @@
         {% endfor %}
     </ul>
 
-    <form action="/logistik/ausliefern_logistikladung" method="post" class="fertig-form">
+    <form action="/logistik/ausliefern_logistikladung" method="post" class="bundle-form">
         <input type="hidden" name="kuerzel" value="{{ kuerzel }}">
 
         <label for="zielort_log">Bestimmungsort:</label>
@@ -111,7 +118,7 @@
             {% endfor %}
         </select>
 
-        <button type="submit" class="fertig-button">Logistik‑Ladungsträger ausliefern</button>
+        <button type="submit" class="bundle-button">Logistik‑Ladungsträger ausliefern</button>
     </form>
 
 </div>
@@ -142,7 +149,7 @@
    ========================================================= #}
 
 {% for g in groups %}
-<div class="bundle {% if g.status == 'fertig' %}bundle-disabled{% endif %}" data-status="{{ g.status }}">
+<div class="bundle {% if g.status == 'fertig' %}bundle-fertig{% endif %}" data-status="{{ g.status }}">
 
     <div class="bundle-header">
         <div class="bundle-title">
@@ -165,12 +172,12 @@
     {% if g.status == "fertig" %}
         <div class="bundle-done-hint">Bereits kommissioniert</div>
     {% else %}
-        <form action="/logistik/buendel_fertig" method="post" class="fertig-form">
+        <form action="/logistik/buendel_fertig" method="post" class="bundle-form">
             <input type="hidden" name="kuerzel" value="{{ kuerzel }}">
             {% for key in g.row_keys %}
                 <input type="hidden" name="row_keys" value="{{ key }}">
             {% endfor %}
-            <button type="submit" class="fertig-button">Fertig melden</button>
+            <button type="submit" class="bundle-button">Fertig melden</button>
         </form>
     {% endif %}
 

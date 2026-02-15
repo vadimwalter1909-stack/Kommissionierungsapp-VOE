@@ -1,7 +1,48 @@
 {% extends "base.html" %}
+
 {% block content %}
 
-<h1>Logistik – Übersicht</h1>
+{# Moderne Navigation – Übersicht braucht keinen Back-Button #}
+{% set page_title = "Logistik – Übersicht" %}
+{% set back_url = None %}
+
+<nav class="app-nav">
+    <div class="nav-left">
+        <span class="nav-title">{{ page_title }}</span>
+    </div>
+</nav>
+
+
+<!-- ---------------------------------------------------------
+     LEGENDE – neue Logistik-Statuslogik
+--------------------------------------------------------- -->
+<div class="legend">
+    <div class="legend-item">
+        <span class="legend-box tile-offen"></span>
+        Noch nichts zu tun
+    </div>
+
+    <div class="legend-item">
+        <span class="legend-box tile-warten_auf_produktion"></span>
+        Logistik fertig – wartet auf Produktion
+    </div>
+
+    <div class="legend-item">
+        <span class="legend-box tile-logistik_muss"></span>
+        Produktion fertig – Logistik muss arbeiten
+    </div>
+
+    <div class="legend-item">
+        <span class="legend-box tile-warten_auf_auslieferung"></span>
+        Alles kommissioniert – wartet auf Auslieferung
+    </div>
+
+    <div class="legend-item">
+        <span class="legend-box tile-komplett"></span>
+        Komplett abgeschlossen
+    </div>
+</div>
+
 
 {% if tiles|length == 0 %}
     <p>Keine Logistikdaten gefunden.</p>

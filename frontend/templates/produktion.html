@@ -1,21 +1,57 @@
 {% extends "base.html" %}
+
 {% block content %}
 
-<h1>Produktion – Übersicht</h1>
+{# Moderne Navigation – Übersicht braucht keinen Back-Button #}
+{% set page_title = "Produktion – Übersicht" %}
+{% set back_url = None %}
+
+<nav class="app-nav">
+    <div class="nav-left">
+        <span class="nav-title">{{ page_title }}</span>
+    </div>
+</nav>
+
 
 {% if tiles|length == 0 %}
     <p>Keine Produktionsdaten gefunden.</p>
 {% else %}
-    <div class="tile-container">
-        {% for tile in tiles %}
-            <a href="/produktion/{{ tile.kuerzel }}" class="tile tile-{{ tile.status }}">
-                <h2>{{ tile.kuerzel }}</h2>
-                <p>Aufträge: {{ tile.anzahl_auftraege }}</p>
-                <p>Positionen: {{ tile.anzahl_positionen }}</p>
-                <p>Fertig: {{ tile.fertige_positionen }}</p>
-            </a>
-        {% endfor %}
-    </div>
+
+<div class="tile-container">
+
+    {% for tile in tiles %}
+
+        {# -----------------------------------------
+           Backend-Status → CSS-Status umwandeln
+           ----------------------------------------- #}
+        {% if tile.status == "fertig" %}
+            {% set status_class = "tile-komplett" %}
+        {% elif tile.status == "teilweise" %}
+            {% set status_class = "tile-logistik_muss" %}
+        {% else %}
+            {% set status_class = "tile-offen" %}
+        {% endif %}
+
+        <a href="/produktion/{{ tile.kuerzel }}" class="tile {{ status_class }}">
+
+            <div class="tile-left">
+                <h2 class="tile-title">{{ tile.kuerzel }}</h2>
+
+                <p class="tile-info">Aufträge: {{ tile.anzahl_auftraege }}</p>
+                <p class="tile-info">Positionen: {{ tile.anzahl_positionen }}</p>
+                <p class="tile-info">Fertig: {{ tile.fertige_positionen }}</p>
+            </div>
+
+            <div class="tile-right">
+                <span class="tile-icon">🏭</span>
+            </div>
+
+        </a>
+
+    {% endfor %}
+
+</div>
+
 {% endif %}
 
 {% endblock %}

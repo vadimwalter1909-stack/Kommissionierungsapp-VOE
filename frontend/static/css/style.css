@@ -1,243 +1,96 @@
 /* ---------------------------------------------------------
-   Grundlayout
+   Grundlayout – modernisiert
 --------------------------------------------------------- */
 body {
-  font-family: Arial, sans-serif;
-  background: #f2f4f7;
-  margin: 0;
-  padding: 20px;
-  color: #222;
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    background: #f2f4f7;
+    margin: 0;
+    padding: 20px;
+    color: #222;
+    letter-spacing: 0.2px;
 }
 
 /* ---------------------------------------------------------
-   Navigation
+   Klassische Hauptnavigation
 --------------------------------------------------------- */
-.navbar {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 25px;
+.main-navbar {
+    background: #ffffff;
+    padding: 12px 16px;
+    display: flex;
+    gap: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 2000;
 }
 
-.navbar a {
-  display: inline-block;
-  padding: 10px 16px;
-  background: #0275d8;
-  color: white;
-  text-decoration: none;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 600;
+.main-navbar a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: 600;
+    font-size: 15px;
 }
 
-.navbar a:hover {
-  background: #025aa5;
-}
-
-h1 {
-  margin-bottom: 25px;
-  font-size: 26px;
-  font-weight: 600;
+.main-navbar a:hover {
+    color: #0056b3;
 }
 
 /* ---------------------------------------------------------
-   Karten / Bündel
+   Moderne App-Navigation
 --------------------------------------------------------- */
-.bundle {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 20px 22px;
-  margin-bottom: 28px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.10);
-  border: 1px solid #e0e0e0;
-  transition: background 0.25s ease;
+.app-nav {
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    padding: 12px 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
 }
 
-/* Statusfarben für Bündel */
-.bundle[data-status="offen"] {
-  background: #ffffff;
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.bundle[data-status="teilweise"] {
-  background: #fff8e6;
+.nav-back {
+    font-size: 22px;
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
 }
 
-.bundle[data-status="fertig"] {
-  background: #e6f7e6;
-  border-color: #b6e2b6;
+.nav-back:hover {
+    color: #0056b3;
 }
 
+.nav-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
 /* ---------------------------------------------------------
-   Header
+   Abstand zwischen Dropdown und Button in Bundles
 --------------------------------------------------------- */
-.bundle-header {
-  margin-bottom: 16px;
+/* Abstand zwischen Dropdown und Button verbessern */
+.bundle-form select {
+    margin-bottom: 20px;   /* mehr Luft */
+    padding: 12px;         /* größerer Touchbereich */
+    font-size: 16px;       /* besser lesbar */
 }
 
-.bundle-title {
-  font-size: 19px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.bundle-subtitle {
-  font-size: 15px;
-  color: #666;
-}
-
-/* ---------------------------------------------------------
-   ProdID-Liste
---------------------------------------------------------- */
-.bundle-prodids {
-  list-style: none;
-  padding: 12px 0 0 0;
-  margin: 0 0 18px 0;
-  border-top: 1px solid #ddd;
-}
-
-.bundle-prodids li {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-  font-size: 15px;
-  color: #333;
-  border-bottom: 1px solid #eee;
-}
-
-.bundle-prodids li:last-child {
-  border-bottom: none;
-}
-
-.prodid-label {
-  font-weight: 500;
-}
-
-.prodid-count {
-  color: #555;
-}
-
-/* ---------------------------------------------------------
-   Buttons
---------------------------------------------------------- */
-.bundle-form {
-  margin-top: 12px;
-}
-
+/* Button auf Mobilgeräten leichter klickbar machen */
 .bundle-button {
-  background: #0275d8;
-  color: white;
-  border: none;
-  padding: 12px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
-  min-height: 44px;
-  width: 100%;
+    padding: 14px 18px;    /* etwas höher */
+    font-size: 17px;       /* besserer Finger-Treffer */
 }
 
-.bundle-button:hover {
-  background: #025aa5;
-}
-
-/* Hinweis für fertige Bündel */
-.bundle-done-hint {
-  margin-top: 12px;
-  padding: 10px 12px;
-  background: #dff3df;
-  border-radius: 6px;
-  font-size: 15px;
-  color: #2d662d;
-  text-align: center;
-  font-weight: 600;
-}
 
 /* ---------------------------------------------------------
-   Back-Button
+   Kacheln – modernisiert
 --------------------------------------------------------- */
-.back-form {
-  margin-bottom: 20px;
-}
-
-.back-button {
-  width: 100%;
-  background: #6c757d;
-  color: white;
-  border: none;
-  padding: 12px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
-  min-height: 44px;
-  text-align: center;
-}
-
-.back-button:hover {
-  background: #5a6268;
-}
-
-/* ---------------------------------------------------------
-   Mobile Optimierung
---------------------------------------------------------- */
-@media (max-width: 600px) {
-
-  .navbar {
-    flex-direction: column;
-  }
-
-  .navbar a {
-    width: 100%;
-    text-align: center;
-    font-size: 17px;
-    padding: 14px;
-  }
-
-  .bundle {
-    padding: 18px;
-  }
-
-  .bundle-title {
-    font-size: 17px;
-  }
-
-  .bundle-subtitle {
-    font-size: 14px;
-  }
-
-  .bundle-prodids li {
-    font-size: 14px;
-  }
-
-  .bundle-button {
-    font-size: 18px;
-    padding: 14px;
-  }
-
-  .back-button {
-    font-size: 18px;
-    padding: 14px;
-  }
-}
-
-/* ---------------------------------------------------------
-   Scroll-Optimierung
---------------------------------------------------------- */
-html, body {
-  -webkit-overflow-scrolling: touch;
-}
-
-/* ---------------------------------------------------------
-   Logistik – ausgegraute fertige Bündel
---------------------------------------------------------- */
-.bundle-disabled {
-    opacity: 0.55;
-    pointer-events: none;
-}
-
-/* ---------------------------------------------------------
-   LOGISTIK-ÜBERSICHT – KACHELN
---------------------------------------------------------- */
-
 .tile-container {
     display: flex;
     flex-wrap: wrap;
@@ -249,7 +102,7 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px 18px;
+    padding: 18px;
     border-radius: 10px;
     min-width: 220px;
     flex: 1 1 calc(33% - 16px);
@@ -258,24 +111,272 @@ html, body {
     font-weight: 600;
     text-decoration: none;
     color: #fff;
+    background-color: #6c757d;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* Statusfarben */
-.tile-offen {
-    background-color: #6c757d; /* Grau */
+.tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
 }
 
-.tile-bereit {
-    background-color: #ffc107; /* Gelb */
-    color: #000;
-}
-
-.tile-komplett {
-    background-color: #28a745; /* Grün */
-}
-
-/* Icons */
 .tile-icon {
     font-size: 22px;
     margin-left: 10px;
+}
+
+/* ---------------------------------------------------------
+   Logistik – Statusfarben
+--------------------------------------------------------- */
+.tile-offen {
+    background-color: #6c757d !important;
+    color: #fff;
+}
+
+.tile-warten_auf_produktion {
+    background-color: #4da3ff !important;
+    color: #fff;
+}
+
+.tile-logistik_muss {
+    background-color: #ffc107 !important;
+    color: #000;
+}
+
+.tile-warten_auf_auslieferung {
+    background-color: #1f78d1 !important;
+    color: #fff;
+}
+
+.tile-komplett {
+    background-color: #28a745 !important;
+    color: #fff;
+}
+
+/* ---------------------------------------------------------
+   Legende
+--------------------------------------------------------- */
+.legend {
+    margin-bottom: 20px;
+    padding: 10px 0;
+    font-size: 14px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.legend-box {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-right: 8px;
+}
+/* ---------------------------------------------------------
+   Mobile Optimierung
+--------------------------------------------------------- */
+@media (max-width: 600px) {
+
+    body {
+        padding: 12px;
+    }
+
+    .tile {
+        padding: 14px;
+        border-radius: 8px;
+    }
+
+    .tile-title {
+        font-size: 18px;
+    }
+
+    .tile-info {
+        font-size: 13px;
+    }
+
+    .tile-icon {
+        font-size: 26px;
+    }
+
+    .bundle {
+        padding: 14px;
+        border-radius: 8px;
+    }
+
+    .bundle-title {
+        font-size: 16px;
+    }
+
+    .bundle-subtitle {
+        font-size: 13px;
+    }
+
+    .fertig-button,
+    .back-button,
+    button {
+        width: 100%;
+        padding: 12px;
+        font-size: 15px;
+    }
+
+    select {
+        width: 100%;
+        padding: 10px;
+        font-size: 15px;
+    }
+}
+
+/* ---------------------------------------------------------
+   Scroll-Optimierung
+--------------------------------------------------------- */
+html, body {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ---------------------------------------------------------
+   Logistik – deaktivierte Bündel
+--------------------------------------------------------- */
+.bundle-disabled {
+    filter: grayscale(100%);
+    opacity: 1 !important;
+    pointer-events: none;
+}
+
+/* ---------------------------------------------------------
+   Bündel – modernisiert
+--------------------------------------------------------- */
+.bundle {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 28px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.10);
+    border: 1px solid #e0e0e0;
+    transition: background 0.25s ease;
+}
+
+.bundle-header {
+    margin-bottom: 16px;
+}
+
+.bundle-title {
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.bundle-subtitle {
+    font-size: 15px;
+    color: #666;
+}
+
+/* ---------------------------------------------------------
+   ProdID-Liste
+--------------------------------------------------------- */
+.bundle-prodids {
+    list-style: none;
+    padding: 12px 0 0 0;
+    margin: 0 0 18px 0;
+    border-top: 1px solid #ddd;
+}
+
+.bundle-prodids li {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 15px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+}
+
+.bundle-prodids li:last-child {
+    border-bottom: none;
+}
+
+.prodid-label {
+    font-weight: 500;
+}
+
+.prodid-count {
+    color: #555;
+}
+
+/* ---------------------------------------------------------
+   Buttons (Bundle)
+--------------------------------------------------------- */
+.bundle-form {
+    margin-top: 12px;
+}
+
+.bundle-button {
+    background: #0275d8;
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    min-height: 44px;
+    width: 100%;
+}
+
+.bundle-button:hover {
+    background: #025aa5;
+}
+
+/* Hinweis für fertige Bündel */
+.bundle-done-hint {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: #dff3df;
+    border-radius: 6px;
+    font-size: 15px;
+    color: #2d662d;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* ---------------------------------------------------------
+   Back-Button
+--------------------------------------------------------- */
+.back-form {
+    margin-bottom: 20px;
+}
+
+.back-button {
+    width: 100%;
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    min-height: 44px;
+    text-align: center;
+}
+
+.back-button:hover {
+    background: #5a6268;
+}
+
+/* ---------------------------------------------------------
+   Hellgrün für kommissionierte Logistik-Bündel
+--------------------------------------------------------- */
+.bundle-fertig {
+    background-color: #d4edda;
+    border-left: 6px solid #28a745;
+    padding: 12px;
+    border-radius: 6px;
+}
+
+.bundle-fertig .bundle-title {
+    color: #155724;
+    font-weight: 600;
 }

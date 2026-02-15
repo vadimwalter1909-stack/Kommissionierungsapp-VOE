@@ -1,32 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Dashboard – Gesamtfortschritt</h1>
+{# Moderne Navigation – Übersicht braucht keinen Back-Button #}
+{% set page_title = "Dashboard – Gesamtfortschritt" %}
+{% set back_url = None %}
 
-{% set alles_fertig = (komplett_count == total and total > 0) %}
+<nav class="app-nav">
+    <div class="nav-left">
+        <span class="nav-title">{{ page_title }}</span>
+    </div>
+</nav>
 
-<!-- Export & Reset-Buttons -->
-<div style="margin-bottom: 35px; display: flex; gap: 35px;">
 
-    {% if alles_fertig %}
-        <!-- AKTIVER Export-Button -->
+{# ---------------------------------------------------------
+   Export & Reset – modernisierte Button-Leiste
+--------------------------------------------------------- #}
+<div style="margin-bottom: 35px; display: flex; gap: 20px; flex-wrap: wrap;">
+
+    {% if komplett_count == total and total > 0 %}
         <form action="/export/komplett" method="get">
-            <button type="submit" class="nav-button">
+            <button type="submit" class="bundle-button" style="min-width: 200px;">
                 Excel exportieren
             </button>
         </form>
     {% else %}
-        <!-- DEAKTIVIERTER Export-Button -->
-        <button class="nav-button" style="opacity: 0.4; cursor: not-allowed;" disabled>
+        <button class="bundle-button"
+                style="opacity: 0.4; cursor: not-allowed; min-width: 200px;"
+                disabled>
             Excel exportieren
         </button>
     {% endif %}
 
-    <!-- RESET-BUTTON (weiter weg, echte Button-Optik) -->
     <form action="/export/reset" method="get">
         <button type="submit"
-                class="nav-button"
-                style="background-color: #dc3545;"
+                class="bundle-button"
+                style="background-color: #dc3545; min-width: 200px;"
                 onclick="return confirm('Hast du die Excel-Datei erfolgreich gespeichert? Die App wird jetzt zurückgesetzt.');">
             App zurücksetzen
         </button>
@@ -34,29 +42,49 @@
 
 </div>
 
-<div class="stats-box">
+
+{# ---------------------------------------------------------
+   Statistik-Box – modernisierte Card
+--------------------------------------------------------- #}
+<div class="bundle" style="max-width: 420px;">
+
+    <div class="bundle-header">
+        <div class="bundle-title">Fortschritt</div>
+        <div class="bundle-subtitle">Gesamtübersicht aller Kürzel</div>
+    </div>
+
     <p>Gesamt: {{ total }} Kürzel</p>
     <p>Produktion fertig: {{ prod_fertig_count }}</p>
     <p>Logistik fertig: {{ log_fertig_count }}</p>
     <p><strong>Komplett fertig: {{ komplett_count }}</strong></p>
 
-    <div class="progress-bar">
+    <div class="progress-bar" style="margin-top: 18px;">
         <div class="progress-fill" style="width: {{ progress }}%;"></div>
     </div>
+
     <div class="progress-label">{{ progress }}%</div>
 </div>
 
-<h2>Komplett fertige Kürzel</h2>
+
+{# ---------------------------------------------------------
+   Fertige Kürzel – moderne Kacheln
+--------------------------------------------------------- #}
+<h2 style="margin-top: 40px;">Komplett fertige Kürzel</h2>
 
 {% if items|length == 0 %}
     <p>Es gibt aktuell keine vollständig abgeschlossenen Kürzel.</p>
 {% else %}
     <div class="tile-container">
         {% for k in items %}
-            <a href="/dashboard/{{ k }}" class="tile tile-fertig">
-                <h2>{{ k }}</h2>
-                <p>Produktion ✔</p>
-                <p>Logistik ✔</p>
+            <a href="/dashboard/{{ k }}" class="tile tile-komplett">
+                <div class="tile-left">
+                    <h2 class="tile-title">{{ k }}</h2>
+                    <p class="tile-info">Produktion ✔</p>
+                    <p class="tile-info">Logistik ✔</p>
+                </div>
+                <div class="tile-right">
+                    <span class="tile-icon">✔</span>
+                </div>
             </a>
         {% endfor %}
     </div>

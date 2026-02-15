@@ -48,33 +48,45 @@ def build_logistics_tiles(df):
         hat_prod = df_k[prod_mask].shape[0] > 0
         hat_log  = df_k[log_mask].shape[0] > 0
 
+        # Wenn keine Produktion und keine Logistik → ignorieren
         if not hat_prod and not hat_log:
             continue
 
+        # PRODUKTION
         prod_fertig = df_k[prod_mask]["fertig"].all() if hat_prod else True
         prod_ausgeliefert = df_k[prod_mask]["ausgeliefert"].all() if hat_prod else True
 
+        # LOGISTIK
         log_fertig = df_k[log_mask]["fertig"].all() if hat_log else True
         log_ausgeliefert = df_k[log_mask]["ausgeliefert"].all() if hat_log else True
 
-        # --- STATUS ---
-        if prod_ausgeliefert and log_ausgeliefert:
+        # ---------------------------------------------------------
+        # NEUE, NARRENSICHERE LOGIK
+        # ---------------------------------------------------------
+
+        # Zustand E – komplett abgeschlossen
+        if prod_fertig and log_fertig and prod_ausgeliefert and log_ausgeliefert:
             status = "komplett"
-        elif prod_fertig or log_fertig:
-            status = "bereit"
+            icon = "✔️"
+
+        # Zustand D – alles fertig, aber noch nicht ausgeliefert
+        elif prod_fertig and log_fertig and not (prod_ausgeliefert and log_ausgeliefert):
+            status = "warten_auf_auslieferung"
+            icon = "📦📦"
+
+        # Zustand C – Produktion fertig, Logistik NICHT fertig
+        elif prod_fertig and not log_fertig:
+            status = "logistik_muss"
+            icon = "🏭📦"
+
+        # Zustand B – Logistik fertig, Produktion NICHT fertig
+        elif log_fertig and not prod_fertig:
+            status = "warten_auf_produktion"
+            icon = "📦"
+
+        # Zustand A – nichts fertig
         else:
             status = "offen"
-
-        # --- ICONS ---
-        if prod_ausgeliefert and log_ausgeliefert:
-            icon = "✔️"
-        elif prod_fertig and log_fertig:
-            icon = "🏭📦📦"
-        elif prod_fertig:
-            icon = "🏭📦"
-        elif log_fertig:
-            icon = "📦"
-        else:
             icon = "⏳"
 
         tiles.append({
@@ -84,6 +96,7 @@ def build_logistics_tiles(df):
         })
 
     return tiles
+
 
 # ---------------------------------------------------------
 # Data Preparation

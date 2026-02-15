@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>{{ title if title else "Kommissionierungs-App" }}</title>
+    <title>{{ page_title if page_title else "Kommissionierungs-App" }}</title>
 
     <!-- Mobile Optimierung -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,13 +21,33 @@
 
 <body>
 
-<nav class="navbar">
+{# ---------------------------------------------------------
+   Klassische Hauptnavigation (immer sichtbar)
+--------------------------------------------------------- #}
+<nav class="main-navbar">
     <a href="/">Start</a>
     <a href="/produktion">Produktion</a>
     <a href="/logistik">Logistik</a>
     <a href="/dashboard">Dashboard</a>
-    
 </nav>
+
+
+{# ---------------------------------------------------------
+   Moderne App-Navigation (Titel + Back-Button)
+--------------------------------------------------------- #}
+{% if page_title %}
+<nav class="app-nav">
+    <div class="nav-left">
+
+        {% if back_url %}
+            <a href="{{ back_url }}" class="nav-back">←</a>
+        {% endif %}
+
+        <span class="nav-title">{{ page_title }}</span>
+    </div>
+</nav>
+{% endif %}
+
 
 <main>
     {% block content %}{% endblock %}

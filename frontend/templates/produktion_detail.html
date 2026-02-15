@@ -8,12 +8,23 @@
 
 <body>
 
-<h1>Produktion – {{ kuerzel }}</h1>
+{# ---------------------------------------------------------
+   Moderne Navigation
+--------------------------------------------------------- #}
+{% set page_title = "Produktion – " ~ kuerzel %}
+{% set back_url = "/produktion" %}
 
-<form action="/produktion" method="get" class="back-form">
-    <button type="submit" class="back-button">← Zur Übersicht</button>
-</form>
+<nav class="app-nav">
+    <div class="nav-left">
+        <a href="{{ back_url }}" class="nav-back">←</a>
+        <span class="nav-title">{{ page_title }}</span>
+    </div>
+</nav>
 
+
+{# ---------------------------------------------------------
+   Prüfen, ob alle Bündel fertig sind
+--------------------------------------------------------- #}
 {% set alle_fertig = true %}
 {% for g in groups %}
     {% if g.status != "fertig" %}
@@ -21,8 +32,12 @@
     {% endif %}
 {% endfor %}
 
+
+{# ---------------------------------------------------------
+   Produktions-Bündel
+--------------------------------------------------------- #}
 {% for g in groups %}
-<div class="bundle" data-status="{{ g.status }}">
+<div class="bundle {% if g.status == 'fertig' %}bundle-fertig{% endif %}" data-status="{{ g.status }}">
 
     <div class="bundle-header">
         <div class="bundle-title">
