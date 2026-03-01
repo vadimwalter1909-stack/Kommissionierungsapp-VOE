@@ -4,50 +4,57 @@
     <meta charset="UTF-8">
     <title>{{ page_title if page_title else "Kommissionierungs-App" }}</title>
 
-    <!-- Mobile Optimierung -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Professionelle UI-Schrift -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="/static/css/style.css">
-
-    <!-- Favicon -->
+    <link rel="stylesheet" href="/static/css/style.css?v=2">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 </head>
 
 <body>
 
-{# ---------------------------------------------------------
-   Klassische Hauptnavigation (immer sichtbar)
---------------------------------------------------------- #}
-<nav class="main-navbar">
-    <a href="/">Start</a>
-    <a href="/produktion">Produktion</a>
-    <a href="/logistik">Logistik</a>
-    <a href="/dashboard">Dashboard</a>
-</nav>
-
-
-{# ---------------------------------------------------------
-   Moderne App-Navigation (Titel + Back-Button)
---------------------------------------------------------- #}
-{% if page_title %}
-<nav class="app-nav">
+{% if request.url.path != "/login" %}
+<nav class="main-nav">
     <div class="nav-left">
+        <form action="/dashboard" method="get">
+            <button class="nav-btn">Dashboard</button>
+        </form>
 
-        {% if back_url %}
-            <a href="{{ back_url }}" class="nav-back">←</a>
-        {% endif %}
+        <form action="/produktion" method="get">
+            <button class="nav-btn">Produktion</button>
+        </form>
 
-        <span class="nav-title">{{ page_title }}</span>
+        <form action="/logistik" method="get">
+            <button class="nav-btn">Logistik</button>
+        </form>
+    </div>
+
+    <div class="nav-right">
+        <form action="/logout" method="get">
+            <button class="nav-btn nav-btn-logout">
+                <span style="margin-right: 6px;">🚪</span> Logout
+            </button>
+
+        </form>
     </div>
 </nav>
 {% endif %}
 
+{% if request.url.path != "/login" %}
+<nav class="app-nav">
+    <div class="nav-left">
+        {% if back_url %}
+            <a href="{{ back_url }}" class="nav-back">←</a>
+        {% endif %}
+        {% if page_title %}
+            <span class="nav-title">{{ page_title }}</span>
+        {% endif %}
+    </div>
+</nav>
+{% endif %}
 
 <main>
     {% block content %}{% endblock %}

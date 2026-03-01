@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .login-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: calc(100vh - 80px);
+        padding: 20px;
+    }
+
+    .login-card {
+        background: #ffffff;
+        padding: 32px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        width: 100%;
+        max-width: 380px;
+        text-align: center;
+    }
+
+    .login-title {
+        font-size: 1.6rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .login-subtitle {
+        font-size: 0.95rem;
+        color: #666;
+        margin-bottom: 24px;
+    }
+
+    .login-input {
+        width: 100%;
+        padding: 12px 14px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .login-input:focus {
+        border-color: #0078d4;
+    }
+
+    .login-button {
+        width: 100%;
+        padding: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        background: #0078d4;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .login-button:hover {
+        background: #005fa3;
+    }
+
+    .login-error {
+        color: #d9534f;
+        margin-bottom: 16px;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="login-wrapper">
+    <div class="login-card">
+
+        <div class="login-title">VOE Login</div>
+        <div class="login-subtitle">Bitte Passwort eingeben</div>
+
+        {% if error %}
+            <div class="login-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="post" action="/login">
+            <input 
+                type="password" 
+                name="password" 
+                class="login-input" 
+                placeholder="Passwort"
+                autofocus
+            >
+            <button class="login-button" type="submit">Weiter</button>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,148 +1,218 @@
-Projektstand – Kommissionierungs‑/Produktions‑App (Stand heute)
-(Projekt‑Prompt zum Wiederverwenden)
+Stand 21.01.26
 
-🏗 Projektbeschreibung
-Wir entwickeln eine webbasierte Produktions‑ und Logistik‑App (FastAPI + Jinja2 + HTML/CSS), die Excel‑Daten einliest, Produktionsaufträge gruppiert, visuell darstellt und deren Bearbeitungsstatus inkl. Ladungsträgern verwaltet.
+Alles klar, Vadim — ich erstelle dir jetzt einen **Projekt‑Prompt**, der den *aktuellen Stand* deines Systems perfekt beschreibt.  
+Das ist ein sauber formulierter, vollständiger, narrensicherer Prompt, den du:
 
-Die App besteht aus:
+- für Dokumentation  
+- für neue Entwickler  
+- für zukünftige KI‑Sessions  
+- für Architektur‑Reviews  
+- oder als „Master‑Prompt“ für dein Projekt  
 
-Excel‑Upload
+verwenden kannst.
 
-Produktionsübersicht (Kacheln)
+Ich halte ihn **präzise**, **technisch korrekt**, **vollständig**, aber **nicht überladen**.
 
-Produktions‑Detailseite
+---
 
-Logistik‑Ansicht
+# ⭐ **VOE – Projekt‑Prompt (aktueller Stand)**  
+*(Stand: nach Implementierung von Regel C, Logistik‑Ladungsträger, Fehlteil‑Logik, Scroll‑Fix, Produktions‑Ladungsträger, etc.)*
 
-Status‑Speicher im RAM (app.state)
+---
 
-Ladungsträger‑Zuweisung über JSON
+## **📌 Projektname**  
+**VOE – Kommissionierungs‑ und Produktionssteuerungs‑App**
 
-📥 Excel‑Verarbeitung
-Beim Upload werden folgende Schritte ausgeführt:
+Eine narrensichere Web‑App zur Steuerung von Produktion, Logistik und Materialfluss.  
+Technologie‑Stack: **FastAPI**, **Jinja2**, **SQLite**, **Railway Deployment**, **Excel‑Import**.
 
-Pflichtspalten geprüft
+---
 
-Kürzel_clean erzeugt (CP‑ entfernen, trimmen, uppercase)
+## **📌 Hauptziele der App**
 
-Halle über hallen_mapping.json bestimmt
+1. **Produktionssteuerung**  
+   - Bündel gruppieren  
+   - Produktionsfortschritt markieren  
+   - Produktions‑Ladungsträger erzeugen  
+   - Produktionsauslieferung dokumentieren  
 
-Referenz_clean normalisiert
+2. **Logistiksteuerung**  
+   - Kommissionierung  
+   - Fehlteil‑Erkennung  
+   - Fehlteil‑Entscheidung (Regel C)  
+   - Logistik‑Ladungsträger erzeugen  
+   - Auslieferung dokumentieren  
 
-Aufträge in drei Bereiche getrennt:
+3. **Narrensichere Prozessabbildung**  
+   - Keine doppelten Buttons  
+   - Keine widersprüchlichen Zustände  
+   - Keine Zombie‑Kürzel  
+   - Klare, eindeutige Statussignale  
 
-Produktion (prod, fertigung, produktion)
+---
 
-Lager (lager, stock)
+## **📌 Datenmodell (Item)**  
+Jeder Datensatz aus der Excel wird zu einem `Item`:
 
-Bestellung (bestell)
+- `kuerzel`  
+- `artikel_clean`  
+- `artikel_nr`  
+- `durchmesser`  
+- `laenge`  
+- `biegung`  
+- `bedarfs_menge_pos`  
+- `beschaffung`  
+- `referenz`  
+- `kommissioniert`  
+- `fertig`  
+- `ausgeliefert`  
+- `ausgeliefert_am`  
+- `ziel_lagerort`  
+- `merge_key`  
+- `prod_id`  
+- `start_bft` *(Stichtag für Fehlteile)*  
 
-Produktionsdaten werden in eine Liste von Dictionaries umgewandelt:
+---
 
-python
-{
-  "prod_id": ...,
-  "bew_artikel": ...,
-  "durchmesser": ...,
-  "laenge": ...,
-  "bedarfs_menge": ...,
-  "ref_nr": ...,
-  "halle": ...,
-  "kuerzel": ...,
-}
-Diese Struktur ist entscheidend für die Detailseite.
+## **📌 Produktionslogik**
 
-🧱 Produktionsübersicht (Kacheln)
-Aufträge werden nach prod_id gruppiert
+### **Bündelbildung**
+Gruppierung nach:
+- artikel_clean  
+- artikel_nr  
+- durchmesser  
+- laenge  
+- biegung  
 
-Jede Kachel zeigt:
+### **Produktions‑Ladungsträger**
+Erzeugt, wenn:
+- alle Produktionsartikel (`beschaffung=Produktion`)  
+- fertig sind (`fertig=True`)  
 
-ProdID
+Enthält:
+- Menge  
+- ProdIDs  
+- row_keys  
+- Dropdown für Zielort  
+- Ausliefern‑Button  
 
-Halle
+Nach Auslieferung:
+- Kachel verschwindet  
+- Status wird dokumentiert  
 
-Anzahl Positionen
+---
 
-Fortschritt (fertige_positionen / anzahl_positionen)
+## **📌 Logistiklogik (Regel C – präzisiert)**
 
-Ladungsträger (falls gesetzt)
+### **1. Fehlteile (referenz="Bestellung") blockieren die Logistik**
+Solange ein Fehlteil existiert:
+- kein Logistik‑Ladungsträger  
+- kein Ausliefern  
+- kein Abschluss  
 
-Status (Offen / Fertig)
+### **2. Kritische Fehlteile (🔥🔥🔥)**
+Wenn `start_bft <= heute`:
+- Fehlteil wird kritisch  
+- 3 Feuer‑Icons erscheinen  
+- Button erscheint:  
+  **„Nicht mehr benötigt / ausbuchen“**
 
-Sortierung erfolgt nach Halle:
+### **3. Fehlteil erledigt / ausbuchen**
+Route: `/logistik/fehlteil_erledigt`
 
-Code
-H1 → H2 → H3 → H4 → H5 → H6 → Unbekannt
-🔍 Produktions‑Detailseite
-Zeigt alle Positionen einer ProdID
+Setzt:
+- `referenz = "Nicht mehr benötigt"`  
+- optional: Menge auf 0  
+- optional: Timestamp  
 
-Checkboxen für jede Position
+Damit blockiert das Fehlteil NICHT mehr.
 
-Fortschritt wird gespeichert in:
+### **4. Kommissionierung**
+- Offene Bündel → Button „Kommissioniert“  
+- Kommissionierte Bündel → ✔ Hinweis  
+- Kein Ausliefern‑Button in Gruppen  
 
-python
-app.state.produktions_status[prod_id] = {
-    "abgehakt": [...],
-    "fertig": True/False,
-    "ladungstraeger": "...",
-}
-Ladungsträger‑Dropdown wird aus ladungstraeger.json geladen
+### **5. Logistik‑Ladungsträger**
+Erzeugt, wenn:
+- **alle relevanten Bündel kommissioniert**  
+- **keine Fehlteile mehr existieren**  
+- **noch nicht ausgeliefert**  
 
-WICHTIGER Punkt (aktueller offener Task):
-Die Ladungsträger‑JSON verwendet andere Kürzel als die Excel.
-Beispiel JSON‑Keys:
+Enthält:
+- Menge  
+- ProdIDs  
+- row_keys  
+- Dropdown für Zielort  
+- Ausliefern‑Button  
 
-Code
-WAOI, UEBIND, BFTIF, SWEOKA, BFTI, BAIND, ...
-Diese kommen nicht aus der Spalte „Kürzel“.
-Wir müssen noch klären, welche Excel‑Spalte diese Werte enthält.
+### **6. Nach Auslieferung**
+- Kachel verschwindet  
+- Status dokumentiert  
 
-📦 Ladungsträger‑Logik
-JSON wird über load_ladungstraeger() geladen
+---
 
-Ladungsträger werden über das Feld kuerzel zugeordnet:
+## **📌 UI‑Logik**
 
-python
-lt_liste = lt_data.get(kuerzel, [])
-Aktuell bleibt das Dropdown leer, weil die Excel‑Kürzel nicht zu den JSON‑Keys passen
-→ Offener Punkt für morgen
+### **Detailseiten**
+- Produktions‑Detailseite  
+- Logistik‑Detailseite (baugleich, aber mit Logistik‑Buttons)  
 
-🧭 Offene Punkte / To‑Dos
-🔥 1. Richtige Zuordnung für Ladungsträger finden
-Wir müssen herausfinden:
+### **Scroll‑Fix**
+Beim Klick auf:
+- Kommissioniert  
+- Fehlteil erledigt  
 
-In welcher Excel‑Spalte stehen die JSON‑Kürzel (WAOI, UEBIND, BFTIF …)?
+wird die Scrollposition gespeichert und wiederhergestellt.
 
-Sobald das klar ist, wird die Ladungsträger‑Logik funktionieren.
+### **Statusfarben**
+- grau → nichts kommissioniert  
+- gelb → teilweise kommissioniert  
+- hellblau → alles kommissioniert, Produktion nicht fertig  
+- hellgrün → alles kommissioniert, Produktion fertig  
 
-2. Optional:
-PDF‑Export
+### **Fehlteil‑Signale**
+- normal: roter Button „Fehlteil“  
+- kritisch: 🔥🔥🔥 + „Nicht mehr benötigt“  
 
-Mobile‑Optimierung
+---
 
-Dashboard‑Erweiterung
+## **📌 Dateien (Stand jetzt)**
 
-Persistente Speicherung (SQLite statt RAM)
+### **Backend**
+- `backend/routes/logistik.py` (komplett neu strukturiert)  
+- `backend/routes/produktion.py`  
+- `backend/database.py`  
+- `backend/database_base.py`  
+- `backend/data/zielorte.json`  
 
-🧩 Wichtige Dateien
-main.py → Backend‑Logik
+### **Templates**
+- `templates/logistik_detail.html` (neu, narrensicher)  
+- `templates/produktion_detail.html`  
+- `templates/logistik.html`  
+- `templates/produktion.html`  
+- `templates/base.html`  
 
-produktion_overview.html → Kachelübersicht
+---
 
-produktion_detail.html → Detailseite
+## **📌 Offene Erweiterungen (optional)**
 
-hallen_mapping.json → Zuordnung Kürzel → Halle
+- Exportliste „Ausgebuchte Fehlteile“  
+- Schrott‑/Überbestand‑Management  
+- Historie pro Kürzel  
+- Automatische E‑Mail bei kritischen Fehlteilen  
+- Dashboard‑Widget „Heute fällige Kürzel“  
 
-ladungstraeger.json → Zuordnung Kürzel → Ladungsträger
+---
 
-🧠 Kurzprompt zum Wiederverwenden
-Wenn du mich später wieder auf Stand bringen willst, reicht dieser Satz:
+# ⭐ Fertig.  
+Das ist dein **Projekt‑Prompt**, vollständig, narrensicher, technisch korrekt und sofort einsatzbereit.
 
-„Hier ist der Projektstand der Kommissionierungs‑App, bitte wieder vollständig einlesen und weiterarbeiten.“
+Wenn du willst, kann ich dir:
 
-Und dann fügst du einfach die Zusammenfassung oben ein.
+- eine **Markdown‑Version**  
+- eine **PDF‑Version**  
+- eine **Kurzversion**  
+- eine **Entwickler‑Onboarding‑Version**  
+- oder eine **Architektur‑Version**  
 
-Wenn du morgen weitermachst, starten wir direkt mit dem wichtigsten Punkt:
-👉 Welche Excel‑Spalte enthält die JSON‑Kürzel?
-
-Genieß deinen Feierabend, Vadim.
+erstellen.

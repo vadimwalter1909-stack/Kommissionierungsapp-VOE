@@ -1,0 +1,156 @@
+Projekt‑Prompt: VOE Kommissionierungs‑App – aktueller Entwicklungsstand (Stand: Februar 2026)
+Die VOE Kommissionierungs‑App ist eine produktionsnahe Web‑Applikation zur Steuerung von Produktion, Logistik, Kommissionierung und täglichem Export.
+Sie basiert auf FastAPI, Jinja2, SQLite, SQLAlchemy, Tailwind‑ähnlichem CSS, Railway‑Deployment und einem Mini‑Scheduler für tägliche Aufgaben.
+
+🎯 Ziel der App
+Produktionsmitarbeiter melden Fertigstellungen von Kommissionier‑Bündeln.
+
+Logistik sieht bereitstehende Ladungsträger und holt sie ab.
+
+Ein täglicher Export erzeugt eine Excel‑Datei mit allen fertigen/ausgelieferten Items.
+
+Die Excel wird automatisch per E‑Mail versendet (MailerSend SMTP).
+
+Danach werden die exportierten Items aus dem Dashboard entfernt.
+
+🧩 Architekturüberblick
+Backend
+FastAPI als Webserver
+
+SQLite als persistente Datenbank (app.db)
+
+SQLAlchemy ORM für alle Tabellen
+
+Mini‑Scheduler (eigener Thread) für tägliche Exporte
+
+Routen:
+
+/ Dashboard
+
+/produktion/<kuerzel> Produktionsdetail
+
+/logistik/<kuerzel> Logistikdetail
+
+/test/export-email Test‑Route für Export + Mailversand
+
+Middleware:
+
+einfache Rollensteuerung (Produktion / Logistik / Admin)
+
+Frontend
+Jinja2 Templates
+
+Responsive Layout
+
+Einheitliche Navigation (Dashboard / Produktion / Logistik / Logout)
+
+Farb‑ und Icon‑Signale für Status
+
+Scroll‑Position‑Restoration in Detailansichten
+
+Fade‑Out Erfolgsmeldungen bei Uploads
+
+📦 Datenmodell (Item)
+Ein Item enthält u. a.:
+
+id
+
+kuerzel
+
+prod_id
+
+bedarfs_menge_pos
+
+fertig (bool)
+
+ausgeliefert (bool)
+
+ausgeliefert_am (optional)
+
+ziel_lagerort
+
+Hinweis:  
+Es gibt kein Feld fertig_am.
+Der Export setzt dieses Feld aktuell auf "".
+
+📤 Export‑Logik
+Alle Items mit fertig == True oder ausgeliefert == True werden exportiert.
+
+Export erzeugt eine Excel‑Datei im Temp‑Ordner.
+
+Danach wird die Datei per MailerSend SMTP versendet.
+
+Danach werden die exportierten Items aus der DB gelöscht.
+
+Scheduler führt dies täglich automatisch aus.
+
+📧 E‑Mail‑Versand (MailerSend SMTP)
+SMTP‑Server: smtp.mailersend.net
+
+Port: 587 (TLS)
+
+Login funktioniert stabil
+
+Wichtig: MailerSend Free‑Plan erlaubt nur 1 Empfänger pro Mail
+
+Lösung: Mail wird pro Empfänger einzeln gesendet
+
+Gmail empfängt zuverlässig
+
+Firmenadresse (Goldbeck) blockiert → IT‑Security
+
+🧪 Test‑Route
+GET /test/export-email führt aus:
+
+Export
+
+Excel‑Erstellung
+
+E‑Mail‑Versand
+
+Löschen der exportierten Items
+
+JSON‑Antwort:
+
+json
+{"status": "OK", "message": "Test-E-Mail wurde ausgelöst"}
+🟢 Aktueller Zustand (funktional)
+Dashboard läuft
+
+Produktion/Logistik‑Ansichten laufen
+
+Fertigmeldungen funktionieren
+
+Export funktioniert
+
+Excel wird korrekt erzeugt
+
+MailerSend SMTP funktioniert
+
+Gmail empfängt die Datei
+
+Firmenadresse blockiert (erwartbar)
+
+Scheduler läuft stabil
+
+Test‑Route funktioniert zuverlässig
+
+🔴 Offene Punkte / mögliche nächste Schritte
+Empfänger‑Konfiguration in der App (statt Hardcoding)
+
+Export‑Historie speichern
+
+Admin‑Seite für Empfängerverwaltung
+
+API‑basiertes MailerSend‑Versenden (mehrere Empfänger erlaubt)
+
+Optional: fertig_am Feld einführen
+
+Optional: Logging im Terminal verbessern
+
+Optional: Deployment auf Railway finalisieren
+
+🧭 Zusammenfassung
+Die App ist voll funktionsfähig, stabil und produktionsnah.
+Der Export + Mailversand funktioniert zuverlässig über Gmail.
+Für Kollegen wird eine separate externe E‑Mailadresse empfohlen, um Firmen‑Security zu umgehen.

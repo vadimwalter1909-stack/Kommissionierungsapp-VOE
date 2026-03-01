@@ -1,93 +1,79 @@
 {% extends "base.html" %}
 {% block content %}
 
-{# Moderne Navigation – Übersicht braucht keinen Back-Button #}
-{% set page_title = "Dashboard – Gesamtfortschritt" %}
+{% set page_title = "Dashboard – Tagesübersicht" %}
 {% set back_url = None %}
 
-<nav class="app-nav">
-    <div class="nav-left">
-        <span class="nav-title">{{ page_title }}</span>
+{# ---------------------------------------------------------
+   Upload-Bestätigung (Timestamp)
+--------------------------------------------------------- #}
+{% if request.query_params.get("upload_success") %}
+    <div id="upload-success" class="upload-success">
+        <span class="upload-icon">👍</span>
+        <span>Excel erfolgreich hochgeladen um {{ request.query_params.get("timestamp") }}</span>
     </div>
-</nav>
+{% endif %}
 
 
 {# ---------------------------------------------------------
-   Export & Reset – modernisierte Button-Leiste
+   Excel Upload
 --------------------------------------------------------- #}
-<div style="margin-bottom: 35px; display: flex; gap: 20px; flex-wrap: wrap;">
+<form action="/upload" method="post" enctype="multipart/form-data" class="upload-form">
 
-    {% if komplett_count == total and total > 0 %}
-        <form action="/export/komplett" method="get">
-            <button type="submit" class="bundle-button" style="min-width: 200px;">
-                Excel exportieren
-            </button>
-        </form>
-    {% else %}
-        <button class="bundle-button"
-                style="opacity: 0.4; cursor: not-allowed; min-width: 200px;"
-                disabled>
-            Excel exportieren
-        </button>
-    {% endif %}
+    <div class="upload-row">
+        <label for="file">Excel-Datei auswählen:</label>
+        <input type="file" id="file" name="file" accept=".xlsx,.xls" required>
+    </div>
 
-    <form action="/export/reset" method="get">
-        <button type="submit"
-                class="bundle-button"
-                style="background-color: #dc3545; min-width: 200px;"
-                onclick="return confirm('Hast du die Excel-Datei erfolgreich gespeichert? Die App wird jetzt zurückgesetzt.');">
-            App zurücksetzen
-        </button>
-    </form>
-
-</div>
+    <button type="submit" class="bundle-button upload-btn">
+        Hochladen
+    </button>
+</form>
 
 
 {# ---------------------------------------------------------
-   Statistik-Box – modernisierte Card
+   Tagesübersicht – abgeschlossene Kürzel
 --------------------------------------------------------- #}
-<div class="bundle" style="max-width: 420px;">
+<h2 class="section-title">Abgeschlossene Kürzel (Heute)</h2>
 
-    <div class="bundle-header">
-        <div class="bundle-title">Fortschritt</div>
-        <div class="bundle-subtitle">Gesamtübersicht aller Kürzel</div>
-    </div>
-
-    <p>Gesamt: {{ total }} Kürzel</p>
-    <p>Produktion fertig: {{ prod_fertig_count }}</p>
-    <p>Logistik fertig: {{ log_fertig_count }}</p>
-    <p><strong>Komplett fertig: {{ komplett_count }}</strong></p>
-
-    <div class="progress-bar" style="margin-top: 18px;">
-        <div class="progress-fill" style="width: {{ progress }}%;"></div>
-    </div>
-
-    <div class="progress-label">{{ progress }}%</div>
-</div>
-
-
-{# ---------------------------------------------------------
-   Fertige Kürzel – moderne Kacheln
---------------------------------------------------------- #}
-<h2 style="margin-top: 40px;">Komplett fertige Kürzel</h2>
-
-{% if items|length == 0 %}
-    <p>Es gibt aktuell keine vollständig abgeschlossenen Kürzel.</p>
+{% if entries|length == 0 %}
+    <p>Heute wurden noch keine Kürzel abgeschlossen.</p>
 {% else %}
-    <div class="tile-container">
-        {% for k in items %}
-            <a href="/dashboard/{{ k }}" class="tile tile-komplett">
-                <div class="tile-left">
-                    <h2 class="tile-title">{{ k }}</h2>
-                    <p class="tile-info">Produktion ✔</p>
-                    <p class="tile-info">Logistik ✔</p>
+    <div class="dashboard-mini-container">
+        {% for e in entries %}
+            <div class="dashboard-mini-tile">
+                <div class="mini-left">
+
+                    {# ⭐ PATCH: Start-BFT anzeigen #}
+                    <strong class="mini-kuerzel">
+                        {{ e.kuerzel }} – Start: {{ e.start_bft }}
+                    </strong>
+
+                    <span class="mini-details">
+                        {{ e.menge }} Stk • {{ e.zielort }} • {{ e.typ }}
+                    </span>
                 </div>
-                <div class="tile-right">
-                    <span class="tile-icon">✔</span>
+
+                <div class="mini-right">
+                    <span class="mini-icon">✔</span>
+                    <small class="mini-time">{{ e.timestamp.strftime("%H:%M") }}</small>
                 </div>
-            </a>
+            </div>
         {% endfor %}
     </div>
 {% endif %}
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const box = document.getElementById("upload-success");
+        if (box) {
+            setTimeout(() => {
+                box.style.opacity = "0";
+                setTimeout(() => box.remove(), 1000);
+            }, 3000);
+        }
+    });
+</script>
 
 {% endblock %}

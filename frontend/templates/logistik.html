@@ -2,47 +2,37 @@
 
 {% block content %}
 
-{# Moderne Navigation – Übersicht braucht keinen Back-Button #}
 {% set page_title = "Logistik – Übersicht" %}
 {% set back_url = None %}
 
-<nav class="app-nav">
-    <div class="nav-left">
-        <span class="nav-title">{{ page_title }}</span>
-    </div>
-</nav>
-
-
-<!-- ---------------------------------------------------------
-     LEGENDE – neue Logistik-Statuslogik
---------------------------------------------------------- -->
 <div class="legend">
+
     <div class="legend-item">
-        <span class="legend-box tile-offen"></span>
+        <span class="legend-box tile-rot"></span>
+        Kritisch: Fehlende Artikel (Bestellung am Betoniertag / „Nicht gefunden“)
+    </div>
+
+    <div class="legend-item">
+        <span class="legend-box tile-grau"></span>
         Noch nichts zu tun
     </div>
 
     <div class="legend-item">
-        <span class="legend-box tile-warten_auf_produktion"></span>
+        <span class="legend-box tile-gelb"></span>
+        Hinweis: Bestellung – möglicherweise nicht am Lager
+    </div>
+
+    <div class="legend-item">
+        <span class="legend-box tile-hellblau"></span>
         Logistik fertig – wartet auf Produktion
     </div>
 
     <div class="legend-item">
-        <span class="legend-box tile-logistik_muss"></span>
-        Produktion fertig – Logistik muss arbeiten
+        <span class="legend-box tile-hellgruen"></span>
+        Komplett kommissioniert – bereit zur Auslieferung
     </div>
 
-    <div class="legend-item">
-        <span class="legend-box tile-warten_auf_auslieferung"></span>
-        Alles kommissioniert – wartet auf Auslieferung
-    </div>
-
-    <div class="legend-item">
-        <span class="legend-box tile-komplett"></span>
-        Komplett abgeschlossen
-    </div>
 </div>
-
 
 {% if tiles|length == 0 %}
     <p>Keine Logistikdaten gefunden.</p>
@@ -51,19 +41,40 @@
 <div class="tile-container">
 
     {% for tile in tiles %}
-    <a href="/logistik/{{ tile.kuerzel }}" class="tile tile-{{ tile.status }}">
+    <a href="/logistik/{{ tile.kuerzel }}?start_bft={{ tile.start_bft }}"
+       class="tile tile-{{ tile.status }}">
 
         <div class="tile-left">
-            <h2 class="tile-title">
-                {{ tile.kuerzel }}
-            </h2>
 
-            <p class="tile-info">Positionen: {{ tile.anzahl_positionen }}</p>
-            <p class="tile-info">Fertig: {{ tile.fertige_positionen }}</p>
+            <h2 class="tile-title">{{ tile.kuerzel }}</h2>
+            <div class="text-sm text-gray-500">
+                Start: {{ tile.start_bft }}
+            </div>
+
+            <div class="tile-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill"
+                         style="width: {{ (tile.done / tile.total * 100) | round(0) }}%;">
+                    </div>
+                </div>
+                <div class="progress-text">
+                    {{ tile.done }} / {{ tile.total }}
+                </div>
+            </div>
+
+            {% if tile.fehlteile and not tile.kritische_fehlteile %}
+                <div class="tile-hint">
+                    ⚠️ Achtung: Bestellung – möglicherweise nicht am Lager!
+                </div>
+            {% endif %}
         </div>
 
         <div class="tile-right">
             <span class="tile-icon">{{ tile.icon }}</span>
+
+            {% if tile.produktion_fertig %}
+                <span class="tile-icon-extra">🏭</span>
+            {% endif %}
         </div>
 
     </a>

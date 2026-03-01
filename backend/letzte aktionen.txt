@@ -1,0 +1,141 @@
+Alles klar, Vadim — jetzt kann ich dein echtes Dashboard sauber und narrensicher umbauen, weil ich endlich die richtige Datei sehe. Und: Wir machen wieder nur minimale, gezielte Patches, damit nichts verloren geht.
+
+Dein Dashboard basiert nicht auf der Excel, sondern auf der SQL‑Tabelle CompletedToday.
+Das ist perfekt — und wir müssen nur ein einziges Feld ergänzen und zwei Stellen patchen, damit das Dashboard künftig (Kürzel + Start‑BFT) getrennt anzeigen kann.
+
+🧱 Was wir brauchen, damit das Dashboard tagesscharf wird
+1) Die Tabelle CompletedToday muss ein Feld start_bft bekommen
+Sonst kann das Dashboard nicht unterscheiden:
+
+CP‑BFTIV (02.02.)
+
+CP‑BFTIV (03.02.)
+
+2) Die Logistik muss beim Abschluss start_bft mitspeichern
+Du hast bereits mark_as_completed(kuerzel).
+Wir erweitern sie minimal zu:
+
+Code
+mark_as_completed(kuerzel, start_bft)
+3) Das Dashboard zeigt dann jede Kombination getrennt an
+Und sortiert alphabetisch + Datum.
+
+🧱 Schritt 1 — Datenbankmodell erweitern (minimal)
+In backend/database.py:
+
+PATCH: Feld ergänzen
+python
+class CompletedToday(Base):
+    __tablename__ = "completed_today"
+
+    id = Column(Integer, primary_key=True, index=True)
+    kuerzel = Column(String, index=True)
+    menge = Column(Integer)
+    zielort = Column(String)
+    typ = Column(String)
+    timestamp = Column(DateTime)
+    start_bft = Column(String)   # ← NEU
+Migration (einmalig):
+sql
+ALTER TABLE completed_today ADD COLUMN start_bft TEXT;
+🧱 Schritt 2 — mark_as_completed() erweitern
+In deiner Logistik‑Übersicht rufst du:
+
+python
+mark_as_completed(kuerzel)
+Wir ändern das zu:
+
+python
+mark_as_completed(kuerzel, start_bft)
+Und die Funktion selbst:
+
+python
+def mark_as_completed(kuerzel: str, start_bft: str):
+    db = SessionLocal()
+    entry = CompletedToday(
+        kuerzel=kuerzel,
+        menge=0,
+        zielort="",
+        typ="",
+        timestamp=datetime.now(),
+        start_bft=start_bft
+    )
+    db.add(entry)
+    db.commit()
+    db.close()
+🧱 Schritt 3 — Dashboard minimal patchen
+Dein aktuelles Dashboard:
+
+python
+entries = db.query(CompletedToday).order_by(CompletedToday.timestamp.desc()).all()
+Das bleibt — aber wir müssen die Anzeige erweitern.
+
+PATCH: Template‑Daten erweitern
+Ersetze:
+
+python
+"entries": entries
+durch:
+
+python
+"entries": sorted(entries, key=lambda e: (e.kuerzel, e.start_bft or "", e.timestamp))
+Damit sortierst du:
+
+alphabetisch nach Kürzel
+
+dann chronologisch nach Start‑BFT
+
+dann nach Abschlusszeit
+
+Fertiger Block:
+python
+@router.get("/")
+def dashboard(request: Request):
+    db = SessionLocal()
+    entries = db.query(CompletedToday).order_by(CompletedToday.timestamp.desc()).all()
+    db.close()
+
+    entries = sorted(entries, key=lambda e: (e.kuerzel, e.start_bft or "", e.timestamp))
+
+    return request.app.state.templates.TemplateResponse(
+        "dashboard.html",
+        {
+            "request": request,
+            "entries": entries
+        }
+    )
+🧱 Schritt 4 — Dashboard‑HTML minimal erweitern
+Du musst nur eine Zeile ergänzen:
+
+Vorher:
+Code
+{{ entry.kuerzel }}
+Nachher:
+Code
+{{ entry.kuerzel }} – Start: {{ entry.start_bft }}
+Damit sieht man:
+
+CP‑BFTIV – Start: 2026‑02‑02
+
+CP‑BFTIV – Start: 2026‑02‑03
+
+als zwei getrennte Einträge.
+
+🎉 Ergebnis
+Nach diesen minimalen Patches:
+
+Dashboard zeigt jede Kombination aus Kürzel + Datum getrennt.
+
+Wenn gestern und heute ein Auftrag abgeschlossen wird → beide sichtbar.
+
+Produktion & Logistik bleiben tagesscharf.
+
+Dashboard bleibt tagesbasiert, aber nicht mehr blind für mehrere Tage.
+
+Keine Logik geht verloren.
+
+Keine Datei wird überschrieben.
+
+Alles bleibt narrensicher.
+
+Wenn du willst, kann ich dir jetzt die angepasste mark_as_completed() aus deiner Logistik‑Datei patchen, damit sie start_bft korrekt übergibt.

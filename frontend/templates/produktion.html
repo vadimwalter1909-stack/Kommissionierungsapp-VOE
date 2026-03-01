@@ -1,17 +1,28 @@
 {% extends "base.html" %}
 
+{% set page_title = "Produktion – Übersicht" %}
+{% set back_url = "/" %}
+
 {% block content %}
 
-{# Moderne Navigation – Übersicht braucht keinen Back-Button #}
-{% set page_title = "Produktion – Übersicht" %}
-{% set back_url = None %}
+<div class="legend">
 
-<nav class="app-nav">
-    <div class="nav-left">
-        <span class="nav-title">{{ page_title }}</span>
+    <div class="legend-item">
+        <span class="legend-box tile-grau"></span>
+        Noch nichts produziert
     </div>
-</nav>
 
+    <div class="legend-item">
+        <span class="legend-box tile-gelb"></span>
+        Produktion in Bearbeitung
+    </div>
+
+    <div class="legend-item">
+        <span class="legend-box tile-gruen"></span>
+        Produktion abgeschlossen
+    </div>
+
+</div>
 
 {% if tiles|length == 0 %}
     <p>Keine Produktionsdaten gefunden.</p>
@@ -20,34 +31,35 @@
 <div class="tile-container">
 
     {% for tile in tiles %}
+    <a href="/produktion/{{ tile.kuerzel }}?start_bft={{ tile.start_bft }}" class="tile tile-{{ tile.status }}">
 
-        {# -----------------------------------------
-           Backend-Status → CSS-Status umwandeln
-           ----------------------------------------- #}
-        {% if tile.status == "fertig" %}
-            {% set status_class = "tile-komplett" %}
-        {% elif tile.status == "teilweise" %}
-            {% set status_class = "tile-logistik_muss" %}
-        {% else %}
-            {% set status_class = "tile-offen" %}
-        {% endif %}
+        <div class="tile-left">
 
-        <a href="/produktion/{{ tile.kuerzel }}" class="tile {{ status_class }}">
-
-            <div class="tile-left">
-                <h2 class="tile-title">{{ tile.kuerzel }}</h2>
-
-                <p class="tile-info">Aufträge: {{ tile.anzahl_auftraege }}</p>
-                <p class="tile-info">Positionen: {{ tile.anzahl_positionen }}</p>
-                <p class="tile-info">Fertig: {{ tile.fertige_positionen }}</p>
+            <h2 class="tile-title">
+                {{ tile.kuerzel }}
+            </h2>
+            <div class="text-sm text-gray-500">
+                Start: {{ tile.start_bft }}
             </div>
 
-            <div class="tile-right">
-                <span class="tile-icon">🏭</span>
+            <div class="tile-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill"
+                         style="width: {{ (tile.done / tile.total * 100) | round(0) }}%;">
+                    </div>
+                </div>
+                <div class="progress-text">
+                    {{ tile.done }} / {{ tile.total }}
+                </div>
             </div>
 
-        </a>
+        </div>
 
+        <div class="tile-right">
+            <span class="tile-icon">{{ tile.icon }}</span>
+        </div>
+
+    </a>
     {% endfor %}
 
 </div>

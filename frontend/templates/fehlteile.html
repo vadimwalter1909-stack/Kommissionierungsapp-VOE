@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<nav class="app-nav">
+    <div class="nav-left">
+        <a href="/logistik" class="nav-back">←</a>
+        <span class="nav-title">Ausgebuchte Fehlteile</span>
+    </div>
+    <div class="nav-right">
+        <a href="/export/fehlteile" class="nav-button">Excel Export</a>
+    </div>
+</nav>
+
+<div class="detail-container">
+
+    {% if fehlteile|length == 0 %}
+        <p>Keine ausgebuchten Fehlteile vorhanden.</p>
+    {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Kürzel</th>
+                    <th>Artikel</th>
+                    <th>Durchmesser</th>
+                    <th>Länge</th>
+                    <th>Menge</th>
+                    <th>ProdIDs</th>
+                    <th>Ausgebucht am</th>
+                    <th>Start BFT</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in fehlteile %}
+                <tr>
+                    <td>{{ f.kuerzel }}</td>
+                    <td>{{ f.artikel_nr }}</td>
+                    <td>{{ f.durchmesser }}</td>
+                    <td>{{ f.laenge }}</td>
+                    <td>{{ f.bedarfs_menge_pos }}</td>
+                    <td>{{ f.prod_id }}</td>
+                    <td>{{ f.ausgebucht_am }}</td>
+                    <td>{{ f.start_bft }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+</div>
+
+{% endblock %}

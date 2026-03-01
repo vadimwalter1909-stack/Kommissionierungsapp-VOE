@@ -1,16 +1,7 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>Produktion – {{ kuerzel }}</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=1">
-</head>
+{% extends "base.html" %}
 
-<body>
+{% block content %}
 
-{# ---------------------------------------------------------
-   Moderne Navigation
---------------------------------------------------------- #}
 {% set page_title = "Produktion – " ~ kuerzel %}
 {% set back_url = "/produktion" %}
 
@@ -21,56 +12,66 @@
     </div>
 </nav>
 
+<div class="detail-container">
 
-{# ---------------------------------------------------------
-   Prüfen, ob alle Bündel fertig sind
---------------------------------------------------------- #}
-{% set alle_fertig = true %}
-{% for g in groups %}
-    {% if g.status != "fertig" %}
-        {% set alle_fertig = false %}
-    {% endif %}
-{% endfor %}
-
-
-{# ---------------------------------------------------------
-   Produktions-Bündel
---------------------------------------------------------- #}
-{% for g in groups %}
-<div class="bundle {% if g.status == 'fertig' %}bundle-fertig{% endif %}" data-status="{{ g.status }}">
-
-    <div class="bundle-header">
-        <div class="bundle-title">
-            {{ g.bew_artikel }} — {{ g.durchmesser }} mm × {{ g.laenge }} mm
-        </div>
-        <div class="bundle-subtitle">
-            Gesamt: {{ g.anzahl_stk }} Stk
-        </div>
-    </div>
-
-    <ul class="bundle-prodids">
-        {% for p in g.prodids %}
-        <li>
-            <span class="prodid-label">ProdID {{ p.prodid }}</span>
-            <span class="prodid-count">{{ p.anzahl }} Stk</span>
-        </li>
-        {% endfor %}
-    </ul>
-
-    {% if g.status != "fertig" %}
-    <form method="post" action="/produktion/buendel_fertig" class="bundle-form">
-        <input type="hidden" name="kuerzel" value="{{ kuerzel }}">
-        {% for rk in g.row_keys %}
-        <input type="hidden" name="row_keys" value="{{ rk }}">
-        {% endfor %}
-        <button type="submit" class="bundle-button">Bündel fertig</button>
-    </form>
+    {% if groups|length == 0 %}
+        <p>Keine Produktionsdaten gefunden.</p>
     {% else %}
-    <div class="bundle-done-hint">Bereits fertig</div>
+
+        {% for g in groups %}
+        <div class="bundle {% if g.fertig %}bundle-fertig{% endif %}">
+
+            <div class="bundle-header">
+                <div class="bundle-title">
+                    {{ g.artikel_nr }} — {{ g.durchmesser }} mm × {{ g.laenge }} mm
+                </div>
+                <div class="bundle-subtitle">
+                    Gesamt: {{ g.menge }} Stk
+                </div>
+            </div>
+
+            <div class="bundle-info">
+                <p><strong>Artikel:</strong> {{ g.artikel_clean }}</p>
+                <p><strong>Biegung:</strong> {{ g.biegung }}</p>
+                <p><strong>ProdIDs:</strong> {{ g.prod_ids | join(", ") }}</p>
+            </div>
+
+            {% if not g.fertig %}
+            <form method="post" action="/produktion/buendel_fertig" class="bundle-form">
+                <input type="hidden" name="kuerzel" value="{{ kuerzel }}">
+                <input type="hidden" name="start_bft" value="{{ start_bft }}">
+
+                {% for rk in g.row_keys %}
+                    <input type="hidden" name="row_keys" value="{{ rk }}">
+                {% endfor %}
+
+                <button type="submit" class="bundle-button">Bündel fertig</button>
+            </form>
+            {% else %}
+            <div class="bundle-done-hint">✔ Bereits fertig</div>
+            {% endif %}
+
+        </div>
+        {% endfor %}
+
     {% endif %}
 
 </div>
-{% endfor %}
 
-</body>
-</html>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const saved = sessionStorage.getItem("scrollPosProd");
+    if (saved) {
+        window.scrollTo(0, parseInt(saved));
+    }
+
+    document.querySelectorAll("form.bundle-form").forEach(form => {
+        form.addEventListener("submit", () => {
+            sessionStorage.setItem("scrollPosProd", window.scrollY);
+        });
+    });
+});
+</script>
+
+{% endblock %}

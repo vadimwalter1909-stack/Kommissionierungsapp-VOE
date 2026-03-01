@@ -1,0 +1,242 @@
+backend/
+│
+├── main.py
+│
+├── database.py
+├── models.py
+├── repository.py
+├── sql_merge.py
+│
+├── routes/
+│   ├── upload.py
+│   ├── produktion.py
+│   ├── logistik.py
+│   ├── dashboard.py
+│
+├── utils/
+│   ├── dataframe.py
+│   ├── tiles.py
+│
+└── data/
+    └── app.db
+
+
+backend/
+│
+├── auth/
+│   ├── auth_router.py
+│   ├── session.py
+│   ├── middleware.py
+
+-----------------------------------------------------------
+
+⭐ VOE – Projekt‑Prompt (IST‑Stand Februar 2026)
+(fertig zum Speichern)
+
+Projektname:
+VOE – Kommissionierungs‑ und Produktionssteuerungs‑App
+
+Technologie‑Stack:
+Backend: FastAPI
+
+Frontend: Jinja2 Templates, HTML, CSS, JS
+
+Datenbank: SQLAlchemy + SQLite
+
+Deployment: Railway
+
+Struktur: Saubere Modul‑Trennung (routes, auth, database, templates, static)
+
+⭐ Ziel der App:
+Eine interne Produktions‑ und Logistik‑Steuerungs‑App, die:
+
+Produktionsaufträge visualisiert
+
+Logistik‑Status verwaltet
+
+Tagesübersichten zeigt
+
+Excel‑Daten importiert
+
+Statusänderungen narrensicher abbildet
+
+ohne personenbezogene Daten auskommt
+
+ohne DSGVO‑Relevanz bleibt
+
+nur über Rollen geschützt ist (nicht über Benutzerkonten)
+
+⭐ Authentifizierung (IST‑Stand):
+1) Kein Benutzer‑Tracking, keine personenbezogenen Daten
+→ DSGVO‑unproblematisch
+→ Keine Logs, keine User‑IDs, keine Zeitstempel
+
+2) Rollenbasiertes Login (statt Benutzerkonten)
+Rollen sind:
+
+admin
+
+av
+
+produktion
+
+logistik
+
+3) Passwörter liegen in roles.py
+Beispiel:
+
+python
+ROLES = {
+    "admin": "admin123",
+    "av": "av123",
+    "produktion": "prod123",
+    "logistik": "log123"
+}
+4) Session‑Handling speichert nur die Rolle
+→ Cookie: voe_role  
+→ Inhalt: "produktion", "logistik", "av", "admin"
+
+5) Middleware schützt alle Routen
+/login und /static sind öffentlich
+
+alle anderen Routen sind geschützt
+
+Zugriff erfolgt rollenbasiert über ROLE_ACCESS
+
+6) Rolle wird in jedes Template injiziert
+→ request.state.role ist überall verfügbar
+
+⭐ Rollen‑Rechte (IST‑Stand):
+Rolle	Darf sehen	Darf ändern
+Admin	alles	alles
+AV	alles	nichts (read‑only geplant)
+Produktion	nur Produktion	Status „fertig melden“
+Logistik	nur Logistik	Status „ausliefern“
+⭐ Navigation (IST‑Stand):
+1) Rollenbasierte Navbar
+→ in navbar.html  
+→ automatisch eingebunden in base.html
+
+2) Navbar zeigt je nach Rolle nur relevante Bereiche
+Produktion sieht nur „Produktion“
+
+Logistik sieht nur „Logistik“
+
+AV sieht „Dashboard“, „Produktion“, „Logistik“
+
+Admin sieht alles
+
+3) Logout‑Button immer sichtbar
+⭐ Templates (IST‑Stand):
+1) base.html
+enthält rollenbasierte Navbar
+
+enthält app‑nav (Titel + Back‑Button)
+
+bindet navbar.html ein
+
+lädt CSS & JS
+
+2) produktion.html
+zeigt Produktions‑Kacheln
+
+nutzt base.html
+
+keine Navbar mehr direkt im Template
+
+3) logistik.html
+analog zu Produktion
+
+4) Detailseiten
+zeigen Status, Icons, Buttons
+
+Buttons sollen später rollenbasiert ausgeblendet werden
+
+⭐ Backend‑Routen (IST‑Stand):
+/login (GET/POST)
+
+/logout
+
+/dashboard
+
+/produktion
+
+/produktion/{kuerzel}
+
+/logistik
+
+/logistik/{kuerzel}
+
+/upload_excel
+
+Alle geschützt durch Middleware.
+
+⭐ Status‑Logik (IST‑Stand):
+Produktion:
+offen
+
+fertig → Logistik muss arbeiten
+
+komplett abgeschlossen
+
+Logistik:
+offen
+
+ausgeliefert
+
+abgeschlossen
+
+⭐ Dateistruktur (IST‑Stand):
+Code
+backend/
+    auth/
+        roles.py
+        session.py
+        auth_router.py
+        middleware.py
+    routes/
+        upload.py
+        produktion.py
+        logistik.py
+        dashboard.py
+    database.py
+    main.py
+
+frontend/
+    templates/
+        base.html
+        navbar.html
+        login.html
+        produktion.html
+        produktion_detail.html
+        logistik.html
+        logistik_detail.html
+        dashboard.html
+    static/
+        css/style.css
+        js/app.js
+        favicon.ico
+⭐ Nächste Schritte (Vorschlag):
+Erster Testlauf
+
+Login testen
+
+Rollen testen
+
+Navigation testen
+
+Zugriffsbeschränkungen testen
+
+Buttons rollenbasiert ausblenden
+
+AV darf nichts ändern
+
+Produktion darf nur Produktion ändern
+
+Logistik darf nur Logistik ändern
+
+AV wirklich read‑only machen
+
+POST‑Requests blockieren
+
+Admin‑Seite für Passwort‑Änderung (optional)

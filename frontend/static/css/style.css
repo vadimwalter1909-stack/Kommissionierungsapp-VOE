@@ -11,28 +11,27 @@ body {
 }
 
 /* ---------------------------------------------------------
-   Klassische Hauptnavigation
+   Moderne Hauptnavigation (für main-nav)
 --------------------------------------------------------- */
-.main-navbar {
+.main-nav {
     background: #ffffff;
     padding: 12px 16px;
     display: flex;
-    gap: 20px;
+    justify-content: space-between;   /* Links und rechts trennen */
+    align-items: center;
     border-bottom: 1px solid #e0e0e0;
     position: sticky;
     top: 0;
     z-index: 2000;
 }
 
-.main-navbar a {
-    text-decoration: none;
-    color: #007bff;
-    font-weight: 600;
-    font-size: 15px;
+.main-nav .nav-left {
+    display: flex;
+    gap: 20px;
 }
 
-.main-navbar a:hover {
-    color: #0056b3;
+.main-nav .nav-right {
+    display: flex;
 }
 
 /* ---------------------------------------------------------
@@ -56,14 +55,30 @@ body {
 }
 
 .nav-back {
-    font-size: 22px;
+    font-size: 2.4rem;
+    font-weight: 700;
     text-decoration: none;
-    color: #007bff;
-    font-weight: bold;
+    color: #222;
+    margin-right: 1.2rem;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 10px;
+
+    background: #f7f7f7;
+    border: 2px solid #ddd;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+
+    transition: all 0.2s ease;
 }
 
 .nav-back:hover {
-    color: #0056b3;
+    background: #eaeaea;
+    border-color: #ccc;
 }
 
 .nav-title {
@@ -71,22 +86,20 @@ body {
     font-weight: 600;
     color: #333;
 }
+
 /* ---------------------------------------------------------
    Abstand zwischen Dropdown und Button in Bundles
 --------------------------------------------------------- */
-/* Abstand zwischen Dropdown und Button verbessern */
 .bundle-form select {
-    margin-bottom: 20px;   /* mehr Luft */
-    padding: 12px;         /* größerer Touchbereich */
-    font-size: 16px;       /* besser lesbar */
+    margin-bottom: 20px;
+    padding: 12px;
+    font-size: 16px;
 }
 
-/* Button auf Mobilgeräten leichter klickbar machen */
 .bundle-button {
-    padding: 14px 18px;    /* etwas höher */
-    font-size: 17px;       /* besserer Finger-Treffer */
+    padding: 14px 18px;
+    font-size: 17px;
 }
-
 
 /* ---------------------------------------------------------
    Kacheln – modernisiert
@@ -111,7 +124,6 @@ body {
     font-weight: 600;
     text-decoration: none;
     color: #fff;
-    background-color: #6c757d;
     box-shadow: 0 2px 6px rgba(0,0,0,0.12);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -127,31 +139,79 @@ body {
 }
 
 /* ---------------------------------------------------------
-   Logistik – Statusfarben
+   Logistik – neue Statusfarben (Backend-kompatibel)
 --------------------------------------------------------- */
-.tile-offen {
-    background-color: #6c757d !important;
-    color: #fff;
-}
 
-.tile-warten_auf_produktion {
-    background-color: #4da3ff !important;
-    color: #fff;
-}
-
-.tile-logistik_muss {
-    background-color: #ffc107 !important;
+/* ROT – Fehlteile */
+.tile-rot {
+    background-color: #ffcccc !important;
+    border-left: 6px solid #cc0000;
     color: #000;
 }
 
-.tile-warten_auf_auslieferung {
-    background-color: #1f78d1 !important;
-    color: #fff;
+/* GRAU – Noch nichts zu tun */
+.tile-grau {
+    background-color: #e0e0e0 !important;
+    border-left: 6px solid #999;
+    color: #333 !important;
 }
 
-.tile-komplett {
-    background-color: #28a745 !important;
-    color: #fff;
+/* GELB – Logistik arbeitet */
+.tile-gelb {
+    background-color: #ffe680 !important;
+    border-left: 6px solid #e6b800;
+    color: #664d00 !important;
+}
+
+/* HELLBLAU – Logistik fertig, wartet auf Produktion */
+.tile-hellblau {
+    background-color: #d9ecff !important;
+    border-left: 6px solid #3399ff;
+    color: #003d66 !important;
+}
+
+/* HELLGRÜN – Logistik komplett kommissioniert */
+.tile-hellgruen {
+    background-color: #d4edda !important;
+    border-left: 6px solid #28a745;
+    color: #155724 !important;
+}
+/* Roter Streifen für Fehlteile */
+.tile-fehlteil {
+    position: relative;
+}
+
+.tile-fehlteil::before {
+    content: "❗";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 10px;
+    background: #cc0000;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ---------------------------------------------------------
+   Produktion – Statusfarben (unverändert)
+--------------------------------------------------------- */
+.tile-gruen {
+    background-color: #b6f2b6 !important;
+    color: #0f5f0f !important;
+}
+
+.tile-gelb {
+    background-color: #ffe680 !important;
+    color: #664d00 !important;
+}
+
+.tile-grau {
+    background-color: #e0e0e0 !important;
+    color: #333 !important;
 }
 
 /* ---------------------------------------------------------
@@ -176,6 +236,7 @@ body {
     display: inline-block;
     margin-right: 8px;
 }
+
 /* ---------------------------------------------------------
    Mobile Optimierung
 --------------------------------------------------------- */
@@ -227,6 +288,102 @@ body {
         width: 100%;
         padding: 10px;
         font-size: 15px;
+    }
+}
+/* ---------------------------------------------------------
+   MOBILE OPTIMIERUNG
+   --------------------------------------------------------- */
+@media (max-width: 768px) {
+
+    /* Navigation kompakter */
+    .app-nav {
+        padding: 8px 12px;
+    }
+
+    .nav-title {
+        font-size: 1.1rem;
+    }
+
+    /* Kachel-Container */
+    .tile-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 0 10px;
+    }
+
+    /* Kacheln */
+    .tile {
+        flex-direction: row;
+        padding: 14px;
+        border-radius: 10px;
+        min-height: 70px;
+    }
+
+    .tile-title {
+        font-size: 1.1rem;
+        margin-bottom: 0;
+    }
+
+    .tile-icon {
+        font-size: 1.4rem;
+    }
+
+    /* Roter Fehlteil-Streifen */
+    .tile-fehlteil::before {
+        width: 8px;
+        font-size: 0.9rem;
+    }
+
+    /* Detailseite – Bündel */
+    .bundle {
+        padding: 14px;
+        margin-bottom: 14px;
+        border-radius: 10px;
+    }
+
+    .bundle-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .bundle-title {
+        font-size: 1.1rem;
+        line-height: 1.3;
+    }
+
+    .bundle-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .bundle-info p {
+        margin: 3px 0;
+        font-size: 0.9rem;
+        line-height: 1.3;
+    }
+
+    /* ProdIDs kleiner machen */
+    .bundle-info p strong {
+        display: inline-block;
+        min-width: 85px;
+    }
+
+    /* Buttons touch-optimiert */
+    .bundle-button {
+        width: 100%;
+        padding: 12px;
+        font-size: 1rem;
+        border-radius: 8px;
+        margin-top: 10px;
+    }
+
+    /* Hinweisboxen (kommissioniert / ausgeliefert / Fehlteil) */
+    .bundle-done-hint {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+        border-radius: 8px;
+        margin-top: 10px;
     }
 }
 
@@ -379,4 +536,271 @@ html, body {
 .bundle-fertig .bundle-title {
     color: #155724;
     font-weight: 600;
+}
+
+/* ----------------------------------------- */
+/* NAVBAR (rollenbasiert)                    */
+/* ----------------------------------------- */
+
+.navbar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 20px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+}
+
+.navbar a:hover {
+    text-decoration: underline;
+}
+
+.navbar-spacer {
+    flex: 1;
+}
+
+/* ---------------------------------------------------------
+   Upload-Formular
+--------------------------------------------------------- */
+.upload-form {
+    margin-bottom: 35px;
+}
+
+.upload-form label {
+    font-weight: 600;
+    display: block;          /* Label auf eigene Zeile */
+    margin-bottom: 10px;     /* Abstand nach unten */
+}
+
+.upload-form input[type="file"] {
+    display: block;
+    margin-bottom: 22px;     /* Abstand nach unten */
+    margin-top: 6px;         /* Abstand nach oben */
+}
+
+.upload-form .bundle-button {
+    min-width: 160px;
+}
+
+/* ---------------------------------------------------------
+   Upload-Erfolgsmeldung
+--------------------------------------------------------- */
+.upload-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+/* ----------------------------------------------------------
+    Fortschrittsanzeige in Kacheln 
+-------------------------------------------------------------*/
+.tile-progress {
+    margin-top: 6px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #4caf50;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 0.85rem;
+    margin-top: 2px;
+    color: #333;
+}
+
+/* Mobile Optimierung */
+@media (max-width: 768px) {
+    .progress-bar {
+        height: 5px;
+    }
+    .progress-text {
+        font-size: 0.8rem;
+    }
+}
+/* Signal-ICON für Logistik, dass Produktion fertig*/
+
+.tile-icon-extra {
+    font-size: 1.4rem;
+    margin-left: 6px;
+    opacity: 0.9;
+}
+
+/* kkkkkkkk*/
+.production-container {
+    background: #eef7ff;
+    border-left: 6px solid #0077cc;
+    padding: 16px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+
+.prod-title {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.prod-info {
+    margin-bottom: 12px;
+}
+
+.prod-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.prod-select {
+    padding: 6px;
+    font-size: 1rem;
+}
+
+.btn-ausliefern {
+    background: #28a745;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-ausliefern:hover {
+    background: #218838;
+}
+
+/* ---------------------------------------------------------
+   Upload Success Box
+--------------------------------------------------------- */
+.upload-success {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #e8f7e4;
+    color: #2f6627;
+    border: 1px solid #b7e2b0;
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    opacity: 1;
+    transition: opacity 1s ease-out;
+}
+
+.upload-icon {
+    font-size: 1.6rem;
+}
+
+/* ---------------------------------------------------------
+   Upload Form
+--------------------------------------------------------- */
+.upload-row {
+    margin-bottom: 12px;
+}
+
+.upload-row label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.upload-row input[type="file"] {
+    margin-top: 6px;
+}
+
+.upload-btn {
+    min-width: 160px;
+}
+
+/* ---------------------------------------------------------
+   Dashboard Actions
+--------------------------------------------------------- */
+.dashboard-actions {
+    margin-bottom: 35px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    min-width: 200px;
+}
+
+.reset-btn {
+    background-color: #dc3545;
+}
+
+/* ---------------------------------------------------------
+   Mini-Kacheln
+--------------------------------------------------------- */
+.dashboard-mini-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dashboard-mini-tile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #e8f7e4;
+    border: 1px solid #b7e2b0;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.mini-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.mini-kuerzel {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2f6627;
+}
+
+.mini-details {
+    font-size: 0.85rem;
+    color: #444;
+}
+
+.mini-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.mini-icon {
+    font-size: 1.2rem;
+    color: #2f6627;
+}
+
+.mini-time {
+    font-size: 0.75rem;
+    color: #666;
 }
