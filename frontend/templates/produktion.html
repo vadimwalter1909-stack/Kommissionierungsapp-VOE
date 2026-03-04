@@ -13,57 +13,50 @@
     </div>
 
     <div class="legend-item">
-        <span class="legend-box tile-gelb"></span>
-        Produktion in Bearbeitung
-    </div>
-
-    <div class="legend-item">
         <span class="legend-box tile-gruen"></span>
-        Produktion abgeschlossen
+        Fertig zur Abholung
     </div>
 
 </div>
 
-{% if tiles|length == 0 %}
-    <p>Keine Produktionsdaten gefunden.</p>
-{% else %}
-
 <div class="tile-container">
 
     {% for tile in tiles %}
-    <a href="/produktion/{{ tile.kuerzel }}?start_bft={{ tile.start_bft }}" class="tile tile-{{ tile.status }}">
+    <div class="tile tile-{{ tile.status }}">
 
         <div class="tile-left">
-
             <h2 class="tile-title">
-                {{ tile.kuerzel }}
+                {{ tile.name }}
             </h2>
-            <div class="text-sm text-gray-500">
-                Start: {{ tile.start_bft }}
-            </div>
-
-            <div class="tile-progress">
-                <div class="progress-bar">
-                    <div class="progress-fill"
-                         style="width: {{ (tile.done / tile.total * 100) | round(0) }}%;">
-                    </div>
-                </div>
-                <div class="progress-text">
-                    {{ tile.done }} / {{ tile.total }}
-                </div>
-            </div>
-
         </div>
 
         <div class="tile-right">
             <span class="tile-icon">{{ tile.icon }}</span>
         </div>
 
-    </a>
+        <div class="tile-actions">
+
+            {% if tile.status == "grau" %}
+            <form action="/produktion/{{ tile.id }}/fertig" method="post">
+                <button class="btn btn-primary" type="submit">
+                    Fertig zur Abholung
+                </button>
+            </form>
+            {% endif %}
+
+            {% if tile.status == "gruen" %}
+            <form action="/produktion/{{ tile.id }}/reset" method="post">
+                <button class="btn btn-secondary" type="submit">
+                    Zurücksetzen
+                </button>
+            </form>
+            {% endif %}
+
+        </div>
+
+    </div>
     {% endfor %}
 
 </div>
-
-{% endif %}
 
 {% endblock %}

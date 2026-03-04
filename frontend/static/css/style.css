@@ -804,3 +804,64 @@ html, body {
     font-size: 0.75rem;
     color: #666;
 }
+
+.btn {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s ease-in-out;
+}
+
+/* Primärer Button (Aktion) */
+.btn-primary {
+    background-color: #0057b8; /* Goldbeck-Blau */
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #004a9c;
+    transform: translateY(-1px);
+}
+
+/* Sekundärer Button (Reset) */
+.btn-secondary {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background-color: #d5d5d5;
+    transform: translateY(-1px);
+}
+
+/* Buttons in Kacheln zentrieren */
+.tile-left,
+.tile-right {
+    width: 100%;
+    text-align: center;
+}
+
+.tile {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;      /* Zentriert alles horizontal */
+    text-align: center;       /* Zentriert Text */
+}
+
+.tile-left,
+.tile-right {
+    width: 100%;
+    text-align: center;       /* Titel + Icon zentriert */
+}
+
+.tile-actions {
+    width: 100%;
+    display: flex;
+    justify-content: center;  /* Button zentriert */
+    margin-top: 12px;
+}

@@ -9,6 +9,10 @@ from backend.database import Item
 from backend.logic.status import is_done
 from backend.logic.completed import mark_as_completed
 
+# NEU: Produktionssignal-Logik
+from backend.logic.ladungstraeger import LADUNGSTRAEGER
+from backend.logic.produktion_state import load_state, save_state
+
 
 router = APIRouter()
 
@@ -63,11 +67,12 @@ def logistik_overview(request: Request):
                 key=lambda x: (x[0], x[1])  # alphabetisch, dann Datum aufsteigend
             ):
 
-            # TAGESSCHARFE DONE-PRÜFUNG (WICHTIG!)
+            # TAGESSCHARFE DONE-PRÜFUNG
+            # Wenn der Prozess abgeschlossen ist, taucht das Kürzel hier nicht mehr auf
             if is_done(kuerzel, start_bft):
-                mark_as_completed(kuerzel, start_bft)
                 continue
 
+            # Relevante Logistik-Daten (ohne Produktion)
             df_k = df[
                 (df["kuerzel"] == kuerzel) &
                 (df["start_bft"] == start_bft) &
@@ -80,10 +85,7 @@ def logistik_overview(request: Request):
             if df_k.empty:
                 continue
 
-            # Nur Hinweis, keine Blockade
             fehlteile_vorhanden = bool((df_k["referenz"] == "Bestellung").any())
-
-            # Keine kritischen Fehlteile mehr
             kritische_fehlteile = False
 
             total_buendel = df_k["merge_key"].nunique()
@@ -91,25 +93,19 @@ def logistik_overview(request: Request):
                 df_k.groupby("merge_key")["kommissioniert"].all().sum()
             )
 
-            df_prod = df[
-                (df["kuerzel"] == kuerzel) &
-                (df["start_bft"] == start_bft) &
-                (df["beschaffung"] == "Produktion") &
-                (df["referenz"] == "Produktion")
-            ]
-
-            produktion_fertig = df_prod.empty or bool(df_prod["fertig"].all())
-
             kommi_alle = bool(df_k["kommissioniert"].all())
             kommi_einige = bool(df_k["kommissioniert"].any())
 
+            # PRODUKTION IST NICHT MEHR RELEVANT
+            # Neue Statuslogik:
+            # grau      = nichts kommissioniert
+            # gelb      = teilweise kommissioniert
+            # hellgruen = alles kommissioniert (Logistik fertig)
             if not kommi_einige:
                 status = "grau"; icon = "⏳"
             elif kommi_einige and not kommi_alle:
                 status = "gelb"; icon = "🛠"
-            elif kommi_alle and not produktion_fertig:
-                status = "hellblau"; icon = "📦"
-            elif kommi_alle and produktion_fertig:
+            elif kommi_alle:
                 status = "hellgruen"; icon = "✅"
             else:
                 status = "grau"; icon = "⏳"
@@ -122,15 +118,46 @@ def logistik_overview(request: Request):
                 "kritische_fehlteile": False,
                 "total": total_buendel,
                 "done": kommissioniert_buendel,
-                "produktion_fertig": produktion_fertig,
+                "produktion_fertig": True,  # Produktion spielt keine Rolle mehr
                 "start_bft": df_k["start_bft"].iloc[0] if "start_bft" in df_k.columns else ""
             })
         
         tiles = sorted(tiles, key=lambda t: (t["kuerzel"], t["start_bft"]))
 
+    # PRODUKTIONS-KACHELN BLEIBEN UNVERÄNDERT
+    state = load_state()
+    prod_tiles = [
+        {"id": lt["id"], "name": lt["name"]}
+        for lt in LADUNGSTRAEGER
+        if state.get(lt["id"]) == "fertig"
+    ]
+
     return request.app.state.templates.TemplateResponse(
         "logistik.html",
-        {"request": request, "tiles": tiles}
+        {
+            "request": request,
+            "tiles": tiles,
+            "prod_tiles": prod_tiles
+        }
+    )
+
+    # ---------------------------------------------------------
+    # NEU: PRODUKTIONS-KACHELN (FERTIG)
+    # ---------------------------------------------------------
+    state = load_state()
+    prod_tiles = [
+        {"id": lt["id"], "name": lt["name"]}
+        for lt in LADUNGSTRAEGER
+        if state.get(lt["id"]) == "fertig"
+    ]
+
+    return request.app.state.templates.TemplateResponse(
+        "logistik.html",
+        {
+            "request": request,
+            "tiles": tiles,
+            "prod_tiles": prod_tiles
+        }
     )
 
 
@@ -150,26 +177,10 @@ def logistik_detail(request: Request, kuerzel: str):
         df_k = df_k[df_k["start_bft"] == start_bft_filter]
 
     # ---------------------------------------------------------
-    # PRODUKTIONS-LADUNGSTRÄGER
+    # PRODUKTION IST NICHT MEHR RELEVANT
     # ---------------------------------------------------------
-    df_prod = df_k[
-        (df_k["beschaffung"].astype(str).str.strip() == "Produktion") &
-        (df_k["referenz"].astype(str).str.strip() == "Produktion")
-    ]
-
-    if df_prod.empty:
-        produktion_fertig = False
-        prod_ladungstraeger = None
-    else:
-        produktion_fertig = bool(df_prod["fertig"].all())
-        prod_ladungstraeger = {
-            "menge": int(df_prod["bedarfs_menge_pos"].abs().sum()),
-            "row_keys": sorted(df_prod["merge_key"].astype(str).unique()),
-            "prod_ids": sorted(df_prod["prod_id"].unique()),
-            "ziel_lagerort": df_prod["ziel_lagerort"].iloc[0] if "ziel_lagerort" in df_prod else "",
-            "ausgeliefert": bool(df_prod["ausgeliefert"].all()),
-            "ausgeliefert_am": df_prod["ausgeliefert_am"].iloc[0] if "ausgeliefert_am" in df_prod else ""
-        }
+    produktion_fertig = True
+    prod_ladungstraeger = None
 
     # ---------------------------------------------------------
     # LOGISTIK-GRUPPEN
@@ -211,7 +222,6 @@ def logistik_detail(request: Request, kuerzel: str):
         ausgeliefert = bool(df_art["ausgeliefert"].all())
         am_lager = all(ref == "Am Lager" for ref in referenzen)
 
-        # Nur Hinweis
         fehlteil = bestellung
         kritisch_fehlteil = False
 
@@ -233,6 +243,7 @@ def logistik_detail(request: Request, kuerzel: str):
         })
 
     groups = sorted(groups, key=lambda g: (g["durchmesser"], g["laenge"]))
+
     # ---------------------------------------------------------
     # LOGISTIK-LADUNGSTRÄGER (sobald ALLE kommissioniert)
     # ---------------------------------------------------------
@@ -241,7 +252,6 @@ def logistik_detail(request: Request, kuerzel: str):
     log_ladungstraeger = None
 
     if groups:
-        # Alle Gruppen sind relevant (keine kritischen Fehlteile mehr)
         relevante = groups
 
         alle_relevant_kommissioniert = all(
@@ -251,7 +261,7 @@ def logistik_detail(request: Request, kuerzel: str):
             g["ausgeliefert"] for g in relevante
         )
 
-        # Ladungsträger erscheint, sobald alles kommissioniert ist
+        # Wenn alles kommissioniert, aber noch nicht ausgeliefert → Logistik-LT erzeugen
         if alle_relevant_kommissioniert and not alle_relevant_ausgeliefert:
             menge_summe = sum(g["menge"] for g in relevante)
             all_row_keys = sorted({rk for g in relevante for rk in g["row_keys"]})
@@ -278,6 +288,7 @@ def logistik_detail(request: Request, kuerzel: str):
     )
 
 
+
 # ---------------------------------------------------------
 # KOMMISSIONIEREN
 # ---------------------------------------------------------
@@ -298,11 +309,9 @@ def logistik_kommissioniert(
     db.commit()
     db.close()
 
-    # TAGESSCHARFE DONE-PRÜFUNG
     if is_done(kuerzel, start_bft):
         mark_as_completed(kuerzel, start_bft)
 
-    # Immer zur tagesscharfen Detailseite zurück
     return RedirectResponse(
         f"/logistik/{kuerzel}?start_bft={start_bft}",
         status_code=303
@@ -353,6 +362,7 @@ def logistik_ausliefern(
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    # Alle relevanten Artikel als ausgeliefert markieren
     for item in items:
         item.ausgeliefert = True
         item.ziel_lagerort = ziellager
@@ -362,53 +372,11 @@ def logistik_ausliefern(
     db.commit()
     db.close()
 
-    # TAGESSCHARFE DONE-PRÜFUNG
-    if is_done(kuerzel, start_bft):
-        mark_as_completed(kuerzel, start_bft)
+    # NEU: Prozess ist abgeschlossen, sobald Logistik ausgeliefert hat
+    mark_as_completed(kuerzel, start_bft)
 
-    # Immer zur tagesscharfen Detailseite zurück
-    return RedirectResponse(
-        f"/logistik/{kuerzel}?start_bft={start_bft}",
-        status_code=303
-    )
-
-# ---------------------------------------------------------
-# EXPORT: AUSGEBUCHTE FEHLTEILE (Excel)
-# ---------------------------------------------------------
-@router.get("/export/fehlteile")
-def export_fehlteile(request: Request):
-    df = load_df()
-
-    if "ausgebucht" not in df.columns:
-        return RedirectResponse("/fehlteile", status_code=303)
-
-    df = df[df["ausgebucht"] == True]
-
-    if df.empty:
-        return RedirectResponse("/fehlteile", status_code=303)
-
-    group_cols = ["kuerzel", "artikel_nr", "artikel_clean", "durchmesser", "laenge", "biegung", "merge_key"]
-    df_grouped = (
-        df.groupby(group_cols)
-        .agg({
-            "bedarfs_menge_pos": "sum",
-            "prod_id": lambda x: ", ".join(sorted(set(x.astype(str)))),
-            "ausgebucht_am": "first",
-            "start_bft": "first"
-        })
-        .reset_index()
-    )
-
-    filename = f"fehlteile_{date.today().isoformat()}.xlsx"
-    filepath = f"/tmp/{filename}"
-
-    df_grouped.to_excel(filepath, index=False)
-
-    return FileResponse(
-        path=filepath,
-        filename=filename,
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
+    # Danach verschwindet das Kürzel aus der Logistik-Übersicht
+    return RedirectResponse("/logistik", status_code=303)
 
 
 # ---------------------------------------------------------

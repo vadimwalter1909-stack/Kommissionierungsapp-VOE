@@ -13,12 +13,14 @@ from backend.auth.session import get_role
 
 # Routen
 from backend.routes.upload import router as upload_router
-from backend.routes.produktion import router as produktion_router
+from backend.routes.produktion import router as produktion_router   # ← korrekt
 from backend.routes.logistik import router as logistik_router
 from backend.routes.dashboard import router as dashboard_router
 from backend.routes.test_export import test_router
 from backend.routes.export import router as export_router
 from backend.routes.daily_export import router as daily_export_router
+from backend.routes.logistik_produktionssignal import router as logistik_produktionssignal_router
+
 
 # ---------------------------------------------------------
 # Datenbanktabellen erzeugen
@@ -54,15 +56,18 @@ app.add_middleware(AuthMiddleware)
 # ---------------------------------------------------------
 app.include_router(auth_router)
 app.include_router(upload_router)
-app.include_router(produktion_router)
+app.include_router(produktion_router)   # ← nur dieser Produktionsrouter!
 app.include_router(logistik_router)
 app.include_router(dashboard_router)
 app.include_router(test_router)
 app.include_router(export_router)
 app.include_router(daily_export_router)
+app.include_router(logistik_produktionssignal_router)
+
 
 # ---------------------------------------------------------
 # DEBUG: Items eines Kürzels anzeigen
 # ---------------------------------------------------------
 from backend.database_base import SessionLocal
 from backend.database import Item
+

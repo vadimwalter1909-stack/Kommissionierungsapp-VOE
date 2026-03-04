@@ -19,25 +19,26 @@
 {% if request.url.path != "/login" %}
 <nav class="main-nav">
     <div class="nav-left">
-        <form action="/dashboard" method="get">
+
+        <form action="{{ url_for('dashboard') }}" method="get">
             <button class="nav-btn">Dashboard</button>
         </form>
 
-        <form action="/produktion" method="get">
+        <form action="{{ url_for('produktion_overview') }}" method="get">
             <button class="nav-btn">Produktion</button>
         </form>
 
-        <form action="/logistik" method="get">
+        <form action="{{ url_for('logistik_overview') }}" method="get">
             <button class="nav-btn">Logistik</button>
         </form>
+
     </div>
 
     <div class="nav-right">
-        <form action="/logout" method="get">
+        <form action="{{ url_for('logout') }}" method="get">
             <button class="nav-btn nav-btn-logout">
                 <span style="margin-right: 6px;">🚪</span> Logout
             </button>
-
         </form>
     </div>
 </nav>
