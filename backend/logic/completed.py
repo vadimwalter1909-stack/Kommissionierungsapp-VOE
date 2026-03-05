@@ -2,12 +2,13 @@ from backend.database_base import SessionLocal
 from backend.database import CompletedToday, Item
 from datetime import datetime
 
-def mark_as_completed(kuerzel: str, start_bft: str):
+def mark_as_completed(kuerzel: str, prod_id: str, start_bft: str):
     db = SessionLocal()
 
-    # Prüfen, ob bereits eingetragen (tagesscharf!)
+    # Prüfen, ob dieser Auftrag (Kürzel + ProdID + Start-BFT) bereits eingetragen ist
     exists = db.query(CompletedToday).filter(
         CompletedToday.kuerzel == kuerzel,
+        CompletedToday.prod_id == prod_id,
         CompletedToday.start_bft == start_bft
     ).first()
 
@@ -15,7 +16,12 @@ def mark_as_completed(kuerzel: str, start_bft: str):
         db.close()
         return
 
-    items = db.query(Item).filter(Item.kuerzel == kuerzel).all()
+    # Nur Items dieses EINEN Auftrags laden
+    items = db.query(Item).filter(
+        Item.kuerzel == kuerzel,
+        Item.prod_id == prod_id,
+        Item.start_bft == start_bft
+    ).all()
 
     # Menge bestimmen
     menge = sum(abs(i.bedarfs_menge_pos) for i in items)
@@ -40,6 +46,7 @@ def mark_as_completed(kuerzel: str, start_bft: str):
 
     entry = CompletedToday(
         kuerzel=kuerzel,
+        prod_id=prod_id,
         timestamp=datetime.now(),
         typ=typ,
         menge=menge,

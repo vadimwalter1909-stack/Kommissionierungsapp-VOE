@@ -1,12 +1,13 @@
 from backend.database_base import SessionLocal
 from backend.database import Item
 
-def is_done(kuerzel: str, start_bft: str) -> bool:
+def is_done(kuerzel: str, prod_id: str, start_bft: str) -> bool:
     db = SessionLocal()
 
-    # Alle Items dieses Kürzels + Start-BFT laden
+    # Alle Items dieses EINEN Auftrags laden
     items = db.query(Item).filter(
         Item.kuerzel == kuerzel,
+        Item.prod_id == prod_id,
         Item.start_bft == start_bft
     ).all()
 
@@ -21,9 +22,8 @@ def is_done(kuerzel: str, start_bft: str) -> bool:
         if not (i.beschaffung == "Produktion" and i.referenz == "Produktion")
     ]
 
-    # Wenn es keine Logistik-Items gibt, ist der Prozess nicht relevant
     if not log_items:
         return False
 
-    # NEU: Prozess ist fertig, sobald ALLE Logistik-Items ausgeliefert sind
+    # Auftrag ist fertig, wenn ALLE Logistik-Items ausgeliefert sind
     return all(i.ausgeliefert for i in log_items)

@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% set page_title = "Logistik – " ~ kuerzel %}
+{% set page_title = "Logistik – " ~ kuerzel ~ " (#" ~ prod_id ~ ")" %}
 {% set back_url = "/logistik" %}
 
 <nav class="app-nav">
@@ -35,6 +35,7 @@
 
         <form method="post" action="/logistik/ausliefern" class="bundle-form">
             <input type="hidden" name="kuerzel" value="{{ kuerzel }}">
+            <input type="hidden" name="prod_id" value="{{ prod_id }}">
             <input type="hidden" name="start_bft" value="{{ start_bft }}">
 
             {% for rk in prod_ladungstraeger.row_keys %}
@@ -96,6 +97,7 @@
 
         <form method="post" action="/logistik/ausliefern" class="bundle-form">
             <input type="hidden" name="kuerzel" value="{{ kuerzel }}">
+            <input type="hidden" name="prod_id" value="{{ prod_id }}">
             <input type="hidden" name="start_bft" value="{{ start_bft }}">
 
             {% for rk in log_ladungstraeger.row_keys %}
@@ -144,9 +146,6 @@
             {% endif %}
         </div>
 
-        {# ---------------------------------------------------------
-           KRITISCHER FEHLTEIL
-           --------------------------------------------------------- #}
         {% if g.kritisch_fehlteil %}
             <div class="bundle-actions">
                 <button class="bundle-button bundle-button-red" disabled>
@@ -158,6 +157,7 @@
                       class="bundle-form"
                       data-scroll-preserve="true">
                     <input type="hidden" name="kuerzel" value="{{ kuerzel }}">
+                    <input type="hidden" name="prod_id" value="{{ prod_id }}">
                     <input type="hidden" name="start_bft" value="{{ start_bft }}">
                     {% for rk in g.row_keys %}
                         <input type="hidden" name="row_keys" value="{{ rk }}">
@@ -168,27 +168,19 @@
                 </form>
             </div>
 
-        {# ---------------------------------------------------------
-           AUSGELIEFERT
-           --------------------------------------------------------- #}
         {% elif g.ausgeliefert %}
             <div class="bundle-done-hint">✔ Bereits ausgeliefert</div>
 
-        {# ---------------------------------------------------------
-           KOMMISSIONIERT
-           --------------------------------------------------------- #}
         {% elif g.kommissioniert %}
             <div class="bundle-done-hint">✔ Kommissioniert</div>
 
-        {# ---------------------------------------------------------
-           OFFEN → KOMMISSIONIEREN
-           --------------------------------------------------------- #}
         {% else %}
             <form method="post"
                   action="/logistik/kommissioniert"
                   class="bundle-form"
                   data-scroll-preserve="true">
                 <input type="hidden" name="kuerzel" value="{{ kuerzel }}">
+                <input type="hidden" name="prod_id" value="{{ prod_id }}">
                 <input type="hidden" name="start_bft" value="{{ start_bft }}">
                 {% for rk in g.row_keys %}
                     <input type="hidden" name="row_keys" value="{{ rk }}">

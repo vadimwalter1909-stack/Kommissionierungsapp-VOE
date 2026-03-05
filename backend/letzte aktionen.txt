@@ -1,141 +1,151 @@
-Alles klar, Vadim — jetzt kann ich dein echtes Dashboard sauber und narrensicher umbauen, weil ich endlich die richtige Datei sehe. Und: Wir machen wieder nur minimale, gezielte Patches, damit nichts verloren geht.
+Projekt‑Prompt: Komm‑App VOE – aktueller Stand (März 2026)
+Die Komm‑App VOE ist eine produktionsnahe Web‑Applikation zur Steuerung von Produktion, Logistik, Kommissionierung und Auslieferung.
+Sie wird von Vadim entwickelt und basiert auf FastAPI, Jinja2, SQLite, SQLAlchemy, OpenPyXL, EasyOCR und einem Python‑3.11‑venv.
 
-Dein Dashboard basiert nicht auf der Excel, sondern auf der SQL‑Tabelle CompletedToday.
-Das ist perfekt — und wir müssen nur ein einziges Feld ergänzen und zwei Stellen patchen, damit das Dashboard künftig (Kürzel + Start‑BFT) getrennt anzeigen kann.
+🎯 Ziel der App
+Produktionsaufträge verwalten
 
-🧱 Was wir brauchen, damit das Dashboard tagesscharf wird
-1) Die Tabelle CompletedToday muss ein Feld start_bft bekommen
-Sonst kann das Dashboard nicht unterscheiden:
+Kommissionierung und Auslieferung narrensicher steuern
 
-CP‑BFTIV (02.02.)
+Statusübergänge klar und eindeutig abbilden
 
-CP‑BFTIV (03.02.)
+Etiketten per OCR automatisch auslesen
 
-2) Die Logistik muss beim Abschluss start_bft mitspeichern
-Du hast bereits mark_as_completed(kuerzel).
-Wir erweitern sie minimal zu:
+Touch‑optimierte, einfache UI für Produktion & Logistik
 
-Code
-mark_as_completed(kuerzel, start_bft)
-3) Das Dashboard zeigt dann jede Kombination getrennt an
-Und sortiert alphabetisch + Datum.
+Stabile, fehlerfreie Abläufe ohne Mehrdeutigkeiten
 
-🧱 Schritt 1 — Datenbankmodell erweitern (minimal)
-In backend/database.py:
+🏗️ Architektur & Technologien
+Backend: FastAPI (Python 3.11, venv)
 
-PATCH: Feld ergänzen
-python
-class CompletedToday(Base):
-    __tablename__ = "completed_today"
+Frontend: Jinja2‑Templates, CSS, einfache Buttons & Kacheln
 
-    id = Column(Integer, primary_key=True, index=True)
-    kuerzel = Column(String, index=True)
-    menge = Column(Integer)
-    zielort = Column(String)
-    typ = Column(String)
-    timestamp = Column(DateTime)
-    start_bft = Column(String)   # ← NEU
-Migration (einmalig):
-sql
-ALTER TABLE completed_today ADD COLUMN start_bft TEXT;
-🧱 Schritt 2 — mark_as_completed() erweitern
-In deiner Logistik‑Übersicht rufst du:
+Datenbank: SQLite (app.db)
 
-python
-mark_as_completed(kuerzel)
-Wir ändern das zu:
+ORM: SQLAlchemy
 
-python
-mark_as_completed(kuerzel, start_bft)
-Und die Funktion selbst:
+Exports: Excel‑Generierung via OpenPyXL
 
-python
-def mark_as_completed(kuerzel: str, start_bft: str):
-    db = SessionLocal()
-    entry = CompletedToday(
-        kuerzel=kuerzel,
-        menge=0,
-        zielort="",
-        typ="",
-        timestamp=datetime.now(),
-        start_bft=start_bft
-    )
-    db.add(entry)
-    db.commit()
-    db.close()
-🧱 Schritt 3 — Dashboard minimal patchen
-Dein aktuelles Dashboard:
+OCR: EasyOCR (Torch 2.10), Reader global initialisiert
 
-python
-entries = db.query(CompletedToday).order_by(CompletedToday.timestamp.desc()).all()
-Das bleibt — aber wir müssen die Anzeige erweitern.
+Deployment: Lokal, später Railway
 
-PATCH: Template‑Daten erweitern
-Ersetze:
+Rollen: Login‑System mit Rollenverwaltung (Produktion, Logistik, Admin)
 
-python
-"entries": entries
-durch:
+🔄 Aktueller technischer Zustand (Stand jetzt)
+✔️ Python‑Umgebung
+Python 3.11.9 installiert
 
-python
-"entries": sorted(entries, key=lambda e: (e.kuerzel, e.start_bft or "", e.timestamp))
-Damit sortierst du:
+Neues venv erstellt
 
-alphabetisch nach Kürzel
+Alle Pakete erfolgreich installiert
 
-dann chronologisch nach Start‑BFT
+Uvicorn läuft stabil im venv
 
-dann nach Abschlusszeit
+App startet ohne Fehler
 
-Fertiger Block:
-python
-@router.get("/")
-def dashboard(request: Request):
-    db = SessionLocal()
-    entries = db.query(CompletedToday).order_by(CompletedToday.timestamp.desc()).all()
-    db.close()
+✔️ Backend‑Routen funktionieren
+/produktion
 
-    entries = sorted(entries, key=lambda e: (e.kuerzel, e.start_bft or "", e.timestamp))
+/logistik
 
-    return request.app.state.templates.TemplateResponse(
-        "dashboard.html",
-        {
-            "request": request,
-            "entries": entries
-        }
-    )
-🧱 Schritt 4 — Dashboard‑HTML minimal erweitern
-Du musst nur eine Zeile ergänzen:
+/login
 
-Vorher:
-Code
-{{ entry.kuerzel }}
-Nachher:
-Code
-{{ entry.kuerzel }} – Start: {{ entry.start_bft }}
-Damit sieht man:
+/roles
 
-CP‑BFTIV – Start: 2026‑02‑02
+Statuswechsel funktionieren (kommissioniert, ausgeliefert, fertig)
 
-CP‑BFTIV – Start: 2026‑02‑03
+✔️ OCR‑Pipeline läuft technisch
+EasyOCR wird geladen
 
-als zwei getrennte Einträge.
+Torch‑Warnung ist normal (keine GPU)
 
-🎉 Ergebnis
-Nach diesen minimalen Patches:
+OCR‑Endpoint /api/ocr/etikett liefert Antworten
 
-Dashboard zeigt jede Kombination aus Kürzel + Datum getrennt.
+Server reloads funktionieren
 
-Wenn gestern und heute ein Auftrag abgeschlossen wird → beide sichtbar.
+❗ OCR‑Ergebnis ist noch unbrauchbar
+raw_text enthält nur zufällige Zeichen
 
-Produktion & Logistik bleiben tagesscharf.
+Keine LH‑Nummer, kein Kürzel, keine Maße
 
-Dashboard bleibt tagesbasiert, aber nicht mehr blind für mehrere Tage.
+Ursache: Bildqualität + zu aggressive Vorverarbeitung
 
-Keine Logik geht verloren.
+Lösung: sanftere Vorverarbeitung → bereits implementiert
 
-Keine Datei wird überschrieben.
+Regex wird erst angepasst, wenn OCR brauchbaren Text liefert
 
-Alles bleibt narrensicher.
+🧠 OCR‑Status im Detail
+Was funktioniert:
+EasyOCR läuft stabil
 
-Wenn du willst, kann ich dir jetzt die angepasste mark_as_completed() aus deiner Logistik‑Datei patchen, damit sie start_bft korrekt übergibt.
+Vorverarbeitung wird angewendet
+
+OCR‑Endpoint liefert JSON
+
+Server stürzt nicht mehr ab
+
+Was noch nicht funktioniert:
+Erkennung der Etiketteninhalte
+
+Extraktion von:
+
+Kürzel
+
+LH‑Nummer
+
+Durchmesser
+
+Länge
+
+Stückzahl
+
+Nächste Schritte:
+Vorverarbeitung weiter optimieren
+
+Bessere Bilder testen (Abstand, Schärfe, Licht)
+
+Sobald raw_text brauchbar ist → Regex narrensicher machen
+
+🧩 Aktuelle ocr.py (sanfte Vorverarbeitung)
+Reader global initialisiert
+
+Gaussian Blur
+
+EqualizeHist
+
+leichte Kantenverstärkung
+
+kein hartes Thresholding
+
+OCR über EasyOCR
+
+Regex‑Extraktion vorbereitet
+
+🔧 Offene Aufgaben
+OCR‑Qualität verbessern
+
+Regex finalisieren
+
+Performance optimieren (Caching, Preprocessing)
+
+UI‑Feedback verbessern (z. B. Ladeindikator beim OCR)
+
+Optional: Bildgröße vor OCR skalieren
+
+Optional: Etikett‑Spezifische Modelle testen
+
+📌 Projekt‑Zielbild
+Eine narrensichere Produktions‑ und Logistik‑App, die:
+
+Etiketten zuverlässig erkennt
+
+Statuswechsel klar und eindeutig abbildet
+
+Touch‑optimiert ist
+
+Stabil auf Python 3.11 läuft
+
+Keine Mehrdeutigkeiten oder Fehlzustände zulässt
+
+Für reale Produktionsmitarbeiter sofort verständlich ist

@@ -20,6 +20,7 @@ from backend.routes.test_export import test_router
 from backend.routes.export import router as export_router
 from backend.routes.daily_export import router as daily_export_router
 from backend.routes.logistik_produktionssignal import router as logistik_produktionssignal_router
+from backend.routes.ocr import router as ocr_router
 
 
 # ---------------------------------------------------------
@@ -63,6 +64,7 @@ app.include_router(test_router)
 app.include_router(export_router)
 app.include_router(daily_export_router)
 app.include_router(logistik_produktionssignal_router)
+app.include_router(ocr_router, prefix="/api")
 
 
 # ---------------------------------------------------------

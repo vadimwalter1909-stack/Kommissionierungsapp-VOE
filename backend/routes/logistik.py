@@ -9,13 +9,12 @@ from backend.database import Item
 from backend.logic.status import is_done
 from backend.logic.completed import mark_as_completed
 
-# NEU: Produktionssignal-Logik
+# Produktionssignal
 from backend.logic.ladungstraeger import LADUNGSTRAEGER
 from backend.logic.produktion_state import load_state, save_state
 
-
 router = APIRouter()
-
+print(">>> LOGISTIK.PY WURDE GELADEN <<<")
 
 # ---------------------------------------------------------
 # Hilfsfunktionen
@@ -61,20 +60,21 @@ def logistik_overview(request: Request):
     else:
         tiles = []
         today = date.today()
-        
-        for (kuerzel, start_bft) in sorted(
-                df.groupby(["kuerzel", "start_bft"]).groups.keys(),
-                key=lambda x: (x[0], x[1])  # alphabetisch, dann Datum aufsteigend
-            ):
 
-            # TAGESSCHARFE DONE-PRÜFUNG
-            # Wenn der Prozess abgeschlossen ist, taucht das Kürzel hier nicht mehr auf
-            if is_done(kuerzel, start_bft):
+        # NEU: Gruppierung nach (Kürzel, ProdID, Start-BFT)
+        for (kuerzel, prod_id, start_bft) in sorted(
+            df.groupby(["kuerzel", "prod_id", "start_bft"]).groups.keys(),
+            key=lambda x: (x[0], x[1], x[2])
+        ):
+
+            # Prozess abgeschlossen?
+            if is_done(kuerzel, prod_id, start_bft):
                 continue
 
-            # Relevante Logistik-Daten (ohne Produktion)
+            # Relevante Logistikdaten
             df_k = df[
                 (df["kuerzel"] == kuerzel) &
+                (df["prod_id"] == prod_id) &
                 (df["start_bft"] == start_bft) &
                 ~(
                     (df["beschaffung"] == "Produktion") &
@@ -86,7 +86,6 @@ def logistik_overview(request: Request):
                 continue
 
             fehlteile_vorhanden = bool((df_k["referenz"] == "Bestellung").any())
-            kritische_fehlteile = False
 
             total_buendel = df_k["merge_key"].nunique()
             kommissioniert_buendel = (
@@ -96,11 +95,7 @@ def logistik_overview(request: Request):
             kommi_alle = bool(df_k["kommissioniert"].all())
             kommi_einige = bool(df_k["kommissioniert"].any())
 
-            # PRODUKTION IST NICHT MEHR RELEVANT
-            # Neue Statuslogik:
-            # grau      = nichts kommissioniert
-            # gelb      = teilweise kommissioniert
-            # hellgruen = alles kommissioniert (Logistik fertig)
+            # Statuslogik
             if not kommi_einige:
                 status = "grau"; icon = "⏳"
             elif kommi_einige and not kommi_alle:
@@ -112,38 +107,20 @@ def logistik_overview(request: Request):
 
             tiles.append({
                 "kuerzel": kuerzel,
+                "prod_id": prod_id,
                 "status": status,
                 "icon": icon,
                 "fehlteile": fehlteile_vorhanden,
                 "kritische_fehlteile": False,
                 "total": total_buendel,
                 "done": kommissioniert_buendel,
-                "produktion_fertig": True,  # Produktion spielt keine Rolle mehr
-                "start_bft": df_k["start_bft"].iloc[0] if "start_bft" in df_k.columns else ""
+                "produktion_fertig": True,
+                "start_bft": start_bft
             })
-        
-        tiles = sorted(tiles, key=lambda t: (t["kuerzel"], t["start_bft"]))
 
-    # PRODUKTIONS-KACHELN BLEIBEN UNVERÄNDERT
-    state = load_state()
-    prod_tiles = [
-        {"id": lt["id"], "name": lt["name"]}
-        for lt in LADUNGSTRAEGER
-        if state.get(lt["id"]) == "fertig"
-    ]
+        tiles = sorted(tiles, key=lambda t: (t["kuerzel"], t["prod_id"], t["start_bft"]))
 
-    return request.app.state.templates.TemplateResponse(
-        "logistik.html",
-        {
-            "request": request,
-            "tiles": tiles,
-            "prod_tiles": prod_tiles
-        }
-    )
-
-    # ---------------------------------------------------------
-    # NEU: PRODUKTIONS-KACHELN (FERTIG)
-    # ---------------------------------------------------------
+    # Produktions-Kacheln
     state = load_state()
     prod_tiles = [
         {"id": lt["id"], "name": lt["name"]}
@@ -162,29 +139,28 @@ def logistik_overview(request: Request):
 
 
 # ---------------------------------------------------------
-# LOGISTIK – DETAILSEITE (TAGESSCHARF & BÜNDELSCHARF)
+# LOGISTIK – DETAILSEITE
 # ---------------------------------------------------------
-@router.get("/logistik/{kuerzel}")
-def logistik_detail(request: Request, kuerzel: str):
+@router.get("/logistik/{kuerzel}/{prod_id}")
+def logistik_detail(request: Request, kuerzel: str, prod_id: str):
     df = load_df()
     ziellagerorte = load_ziellagerorte()
 
     start_bft_filter = request.query_params.get("start_bft")
 
-    df_k = df[df["kuerzel"] == kuerzel].copy()
+    # NEU: Filter nach ProdID
+    df_k = df[
+        (df["kuerzel"] == kuerzel) &
+        (df["prod_id"] == prod_id)
+    ].copy()
 
     if start_bft_filter:
         df_k = df_k[df_k["start_bft"] == start_bft_filter]
 
-    # ---------------------------------------------------------
-    # PRODUKTION IST NICHT MEHR RELEVANT
-    # ---------------------------------------------------------
     produktion_fertig = True
     prod_ladungstraeger = None
 
-    # ---------------------------------------------------------
-    # LOGISTIK-GRUPPEN
-    # ---------------------------------------------------------
+    # Logistik-Gruppen
     df_groups = df_k[
         ~(
             (df_k["beschaffung"].astype(str).str.strip() == "Produktion") &
@@ -223,7 +199,6 @@ def logistik_detail(request: Request, kuerzel: str):
         am_lager = all(ref == "Am Lager" for ref in referenzen)
 
         fehlteil = bestellung
-        kritisch_fehlteil = False
 
         groups.append({
             "artikel_clean": artikel_clean,
@@ -244,9 +219,7 @@ def logistik_detail(request: Request, kuerzel: str):
 
     groups = sorted(groups, key=lambda g: (g["durchmesser"], g["laenge"]))
 
-    # ---------------------------------------------------------
-    # LOGISTIK-LADUNGSTRÄGER (sobald ALLE kommissioniert)
-    # ---------------------------------------------------------
+    # Logistik-Ladungsträger
     alle_relevant_kommissioniert = False
     alle_relevant_ausgeliefert = False
     log_ladungstraeger = None
@@ -261,7 +234,6 @@ def logistik_detail(request: Request, kuerzel: str):
             g["ausgeliefert"] for g in relevante
         )
 
-        # Wenn alles kommissioniert, aber noch nicht ausgeliefert → Logistik-LT erzeugen
         if alle_relevant_kommissioniert and not alle_relevant_ausgeliefert:
             menge_summe = sum(g["menge"] for g in relevante)
             all_row_keys = sorted({rk for g in relevante for rk in g["row_keys"]})
@@ -278,6 +250,7 @@ def logistik_detail(request: Request, kuerzel: str):
         {
             "request": request,
             "kuerzel": kuerzel,
+            "prod_id": prod_id,
             "groups": groups,
             "ziellagerorte": ziellagerorte,
             "produktion_fertig": produktion_fertig,
@@ -286,9 +259,6 @@ def logistik_detail(request: Request, kuerzel: str):
             "start_bft": start_bft_filter or "",
         }
     )
-
-
-
 # ---------------------------------------------------------
 # KOMMISSIONIEREN
 # ---------------------------------------------------------
@@ -296,6 +266,7 @@ def logistik_detail(request: Request, kuerzel: str):
 def logistik_kommissioniert(
     request: Request,
     kuerzel: str = Form(...),
+    prod_id: str = Form(...),
     row_keys: list[str] = Form(...),
     start_bft: str = Form(default="")
 ):
@@ -309,22 +280,23 @@ def logistik_kommissioniert(
     db.commit()
     db.close()
 
-    if is_done(kuerzel, start_bft):
-        mark_as_completed(kuerzel, start_bft)
+    if is_done(kuerzel, prod_id, start_bft):
+        mark_as_completed(kuerzel, prod_id, start_bft)
 
     return RedirectResponse(
-        f"/logistik/{kuerzel}?start_bft={start_bft}",
+        f"/logistik/{kuerzel}/{prod_id}?start_bft={start_bft}",
         status_code=303
     )
 
 
 # ---------------------------------------------------------
-# "NICHT GEFUNDEN"
+# FEHLTEIL ERLEDIGT
 # ---------------------------------------------------------
 @router.post("/logistik/fehlteil_erledigt")
 def logistik_nicht_gefunden(
     request: Request,
     kuerzel: str = Form(...),
+    prod_id: str = Form(...),
     row_keys: list[str] = Form(...),
     start_bft: str = Form(default="")
 ):
@@ -340,10 +312,10 @@ def logistik_nicht_gefunden(
     db.commit()
     db.close()
 
-    if start_bft:
-        return RedirectResponse(f"/logistik/{kuerzel}?start_bft={start_bft}", status_code=303)
-
-    return RedirectResponse(f"/logistik/{kuerzel}", status_code=303)
+    return RedirectResponse(
+        f"/logistik/{kuerzel}/{prod_id}?start_bft={start_bft}",
+        status_code=303
+    )
 
 
 # ---------------------------------------------------------
@@ -353,6 +325,7 @@ def logistik_nicht_gefunden(
 def logistik_ausliefern(
     request: Request,
     kuerzel: str = Form(...),
+    prod_id: str = Form(...),
     row_keys: list[str] = Form(...),
     ziellager: str = Form(default=""),
     start_bft: str = Form(default="")
@@ -362,7 +335,6 @@ def logistik_ausliefern(
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Alle relevanten Artikel als ausgeliefert markieren
     for item in items:
         item.ausgeliefert = True
         item.ziel_lagerort = ziellager
@@ -372,15 +344,14 @@ def logistik_ausliefern(
     db.commit()
     db.close()
 
-    # NEU: Prozess ist abgeschlossen, sobald Logistik ausgeliefert hat
-    mark_as_completed(kuerzel, start_bft)
+    # Prozess abgeschlossen → Kachel verschwindet aus Übersicht
+    mark_as_completed(kuerzel, prod_id, start_bft)
 
-    # Danach verschwindet das Kürzel aus der Logistik-Übersicht
     return RedirectResponse("/logistik", status_code=303)
 
 
 # ---------------------------------------------------------
-# ÜBERSICHT: AUSGEBUCHTE FEHLTEILE
+# FEHLTEILE-ÜBERSICHT
 # ---------------------------------------------------------
 @router.get("/fehlteile")
 def fehlteile_overview(request: Request):
@@ -394,7 +365,16 @@ def fehlteile_overview(request: Request):
         if df.empty:
             fehlteile = []
         else:
-            group_cols = ["kuerzel", "artikel_nr", "artikel_clean", "durchmesser", "laenge", "biegung", "merge_key"]
+            group_cols = [
+                "kuerzel",
+                "artikel_nr",
+                "artikel_clean",
+                "durchmesser",
+                "laenge",
+                "biegung",
+                "merge_key"
+            ]
+
             df_grouped = (
                 df.groupby(group_cols)
                 .agg({
