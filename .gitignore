@@ -1,0 +1,50 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+*.egg
+*.log
+
+# --- Virtual Environments ---
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# --- FastAPI / Uvicorn ---
+*.db-journal
+
+# --- SQLite ---
+*.sqlite3
+*.db
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- OS / Editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# --- Build / Distribution ---
+build/
+dist/
+*.spec
+
+# --- Node / Frontend (falls vorhanden) ---
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# --- Images / Uploads (falls generiert) ---
+uploads/
+static/uploads/
+
+# --- Cache ---
+.cache/
