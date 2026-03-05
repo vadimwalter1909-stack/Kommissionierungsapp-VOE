@@ -7,3 +7,7 @@ python-multipart
 sqlalchemy
 python-dotenv
 email-validator
+easyocr
+opencv-python-headless
+numpy
+pillow
