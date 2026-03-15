@@ -32,35 +32,39 @@
 
 
 {# ---------------------------------------------------------
-   Tagesübersicht – abgeschlossene Kürzel
+   Fertige Aufträge aus der Produktion – MINI-KACHELN
 --------------------------------------------------------- #}
-<h2 class="section-title">Abgeschlossene Kürzel (Heute)</h2>
+<h2 class="section-title" style="margin-top: 30px;">
+    Fertige Aufträge aus der Produktion
+</h2>
 
-{% if entries|length == 0 %}
-    <p>Heute wurden noch keine Kürzel abgeschlossen.</p>
+{% if fertige_auftraege|length == 0 %}
+    <p>Aktuell liegen keine fertigen Aufträge vor.</p>
 {% else %}
-    <div class="dashboard-mini-container">
-        {% for e in entries %}
-            <div class="dashboard-mini-tile">
-                <div class="mini-left">
+<div class="dashboard-mini-container">
 
-                    {# ⭐ PATCH: Start-BFT anzeigen #}
-                    <strong class="mini-kuerzel">
-                        {{ e.kuerzel }} – Start: {{ e.start_bft }}
-                    </strong>
+    {% for f in fertige_auftraege %}
+    <div class="dashboard-mini-tile">
 
-                    <span class="mini-details">
-                        {{ e.menge }} Stk • {{ e.zielort }} • {{ e.typ }}
-                    </span>
-                </div>
+        <div class="mini-left">
+            <strong class="mini-kuerzel">
+                {{ f.kuerzel }} – #{{ f.prod_id }} – Start: {{ f.start_bft }}
+            </strong>
 
-                <div class="mini-right">
-                    <span class="mini-icon">✔</span>
-                    <small class="mini-time">{{ e.timestamp.strftime("%H:%M") }}</small>
-                </div>
-            </div>
-        {% endfor %}
+            <span class="mini-details">
+                {{ f.menge }} Stk • {{ f.zielort }} • {{ f.typ }}
+            </span>
+        </div>
+
+        <div class="mini-right">
+            <span class="mini-icon">✔</span>
+            <small class="mini-time">{{ f.timestamp.strftime("%H:%M") }}</small>
+        </div>
+
     </div>
+    {% endfor %}
+
+</div>
 {% endif %}
 
 

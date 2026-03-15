@@ -22,6 +22,11 @@ venv.bak/
 # --- SQLite ---
 *.sqlite3
 *.db
+app.db
+
+# --- Runtime State Files (VOE App) ---
+backend/data/produktion_state.json
+produktion_ladungstraeger.json
 
 # --- Jupyter ---
 .ipynb_checkpoints/
@@ -48,3 +53,6 @@ static/uploads/
 
 # --- Cache ---
 .cache/
+
+# --- Environment Variables ---
+.env

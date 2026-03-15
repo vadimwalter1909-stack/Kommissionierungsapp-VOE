@@ -17,6 +17,36 @@
 <body>
 
 {% if request.url.path != "/login" %}
+    {% if request.state.role == "admin" %}
+    <div class="admin-badge">
+        🔐 Admin‑Modus aktiv
+    </div>
+    {% endif %}
+{% endif %}
+
+<style>
+.admin-badge {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    background: linear-gradient(135deg, #d9534f, #b52b27);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    animation: fadeInBadge 0.4s ease;
+}
+
+@keyframes fadeInBadge {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+{% if request.url.path != "/login" %}
 <nav class="main-nav">
     <div class="nav-left">
 
@@ -30,6 +60,11 @@
 
         <form action="{{ url_for('logistik_overview') }}" method="get">
             <button class="nav-btn">Logistik</button>
+        </form>
+
+        <!-- 🅿️ PARKZONE -->
+        <form action="/parkzone" method="get">
+            <button class="nav-btn">🅿️ Parkzone</button>
         </form>
 
     </div>

@@ -48,6 +48,13 @@ class Item(Base):
     ausgebucht = Column(Boolean, default=False)
     ausgebucht_am = Column(String, default="")
 
+    # ---------------------------------------------------------
+    # PARKZONE – VERSCHOBENE AUFTRÄGE
+    # ---------------------------------------------------------
+    verschoben = Column(Boolean, default=False)
+    reaktiviert = Column(Boolean, default=False)
+
+
 
 # ---------------------------------------------------------
 # COMPLETED TODAY – TAGESSCHARFE ABSCHLÜSSE

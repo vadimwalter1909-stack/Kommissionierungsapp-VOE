@@ -910,3 +910,84 @@ html, body {
     border-radius: 4px;
     font-size: 16px;
 }
+
+.tile {
+    position: relative;
+}
+
+.tile-delete-form {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    margin: 0;
+    padding: 0;
+}
+
+.tile-delete-btn {
+    background: #ff4d4d;
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 0;
+    line-height: 20px;
+    text-align: center;
+}
+
+.tile-delete-btn:hover {
+    background: #cc0000;
+}
+/* Alle Kacheln in der Parkzone schwarz */
+.parkzone-page .tile,
+.parkzone-page .tile * {
+    color: #000 !important;
+}
+.tile-parkzone {
+    border: 3px solid #ff9900;
+}
+
+.tile-parkzone-bg {
+    background-color: #fff7e6;
+}
+/* 🔵 Reaktiviert-Kachel */
+.tile-reaktiviert {
+    border: 3px solid #3b82f6 !important;
+    background: #dbeafe !important;
+}
+
+/* 🔵 Reaktiviert-Badge */
+.badge-reaktiviert {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: #3b82f6;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 10;
+}
+<style>
+.add-arbeitsplatz-artikel {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 22px;
+    font-weight: bold;
+    background: #3b82f6;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.add-arbeitsplatz-artikel:hover {
+    background: #1e40af;
+}
+</style>
+

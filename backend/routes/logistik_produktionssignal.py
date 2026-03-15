@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
-from backend.logic.ladungstraeger import LADUNGSTRAEGER
+
+from backend.logic.ladungstraeger import load_ladungstraeger
 from backend.logic.produktion_state import load_state, save_state
 
 router = APIRouter()
@@ -12,9 +13,10 @@ router = APIRouter()
 @router.get("/logistik_produktionssignal")
 def logistik_produktionssignal(request: Request):
     state = load_state()
+    lt_list = load_ladungstraeger()
 
     prod_tiles = []
-    for lt in LADUNGSTRAEGER:
+    for lt in lt_list:
         lt_id = lt["id"]
         if state.get(lt_id) == "fertig":
             prod_tiles.append({
@@ -37,4 +39,3 @@ def logistik_produktions_lieferung(lt_id: str):
     state[lt_id] = "offen"
     save_state(state)
     return RedirectResponse("/logistik", status_code=303)
-

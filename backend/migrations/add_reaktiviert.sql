@@ -1,0 +1,1 @@
+ALTER TABLE items ADD COLUMN reaktiviert BOOLEAN DEFAULT 0;

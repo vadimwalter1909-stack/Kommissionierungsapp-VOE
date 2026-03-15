@@ -19,15 +19,56 @@
 
 </div>
 
+<!-- + Icon zum Einblenden -->
+<button 
+    id="show-add-form" 
+    class="btn btn-primary" 
+    style="margin-bottom: 20px; font-size: 22px; padding: 4px 12px;"
+>
+    +
+</button>
+
+<!-- Verstecktes Formular -->
+<form 
+    id="add-form" 
+    action="/produktion/add" 
+    method="post" 
+    style="margin-bottom: 20px; display: none;"
+>
+    <input 
+        type="text" 
+        name="name" 
+        placeholder="Name des Ladungsträgers…" 
+        required 
+        style="padding: 8px; margin-right: 10px; width: 250px;"
+    >
+    <button class="btn btn-primary" type="submit">
+        Anlegen
+    </button>
+</form>
+
 <div class="tile-container">
 
     {% for tile in tiles %}
-    <div class="tile tile-{{ tile.status }}">
+    <div class="tile tile-{{ tile.status }}" style="position: relative;">
+
+        <!-- ❌ ROTES X OBEN RECHTS + Sicherheitsabfrage -->
+        <form 
+            action="/produktion/{{ tile.id }}/delete" 
+            method="post" 
+            class="tile-delete-form"
+            onsubmit="return confirm('Soll der Ladungsträger wirklich gelöscht werden?');"
+        >
+            <button class="tile-delete-btn" type="submit">✖</button>
+        </form>
 
         <div class="tile-left">
             <h2 class="tile-title">
                 {{ tile.name }}
             </h2>
+            <div style="font-size: 0.8em; opacity: 0.7;">
+                ID: {{ tile.id }}
+            </div>
         </div>
 
         <div class="tile-right">
@@ -58,5 +99,13 @@
     {% endfor %}
 
 </div>
+
+<!-- Mini-JS zum Einblenden des Formulars -->
+<script>
+document.getElementById("show-add-form").addEventListener("click", function () {
+    document.getElementById("add-form").style.display = "block";
+    this.style.display = "none";
+});
+</script>
 
 {% endblock %}

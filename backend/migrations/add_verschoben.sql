@@ -1,0 +1,1 @@
+ALTER TABLE items ADD COLUMN verschoben BOOLEAN DEFAULT 0;

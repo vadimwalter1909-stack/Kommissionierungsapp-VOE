@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="section-title" style="margin-top: 20px;">
+    Upload – Zusammenfassung
+</h2>
+
+{% if errors %}
+<h3 class="section-title" style="margin-top: 20px; color: #b30000;">
+    Blockierte Aufträge (Fehler)
+</h3>
+
+<div class="dashboard-mini-container">
+    {% for e in errors %}
+    <div class="dashboard-mini-tile" style="background: #ffdddd;">
+        <div class="mini-left">
+            <strong class="mini-kuerzel">
+                {{ e.kuerzel }} – #{{ e.prod_id }}
+            </strong>
+            <span class="mini-details">
+                {{ e.reason }}
+            </span>
+        </div>
+        <div class="mini-right">
+            <span class="mini-icon">⛔</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+
+{% if warnings %}
+<h3 class="section-title" style="margin-top: 30px; color: #b36b00;">
+    Aufträge in Parkzone (Warnungen)
+</h3>
+
+<div class="dashboard-mini-container">
+    {% for w in warnings %}
+    <div class="dashboard-mini-tile" style="background: #fff3cd;">
+        <div class="mini-left">
+            <strong class="mini-kuerzel">
+                {{ w.kuerzel }} – #{{ w.prod_id }}
+            </strong>
+
+            <span class="mini-details">
+                Alter Start-BFT: {{ w.start_bft_alt }}
+            </span>
+
+            <span class="mini-details">
+                Neuer Start-BFT aus Excel: {{ w.start_bft_neu }}
+            </span>
+
+            <span class="mini-details" style="color: #b36b00;">
+                {{ w.reason }}
+            </span>
+        </div>
+
+        <div class="mini-right">
+            <span class="mini-icon">⚠️</span>
+        </div>
+    </div>
+
+    <form action="/reactivate/{{ w.prod_id }}" method="post" style="margin-top: 10px;">
+        <input type="hidden" name="start_bft" value="{{ w.start_bft_neu }}">
+        <button type="submit" class="bundle-button" style="background: #28a745;">
+            Auftrag reaktivieren
+        </button>
+    </form>
+
+    {% endfor %}
+</div>
+{% endif %}
+
+
+<a href="/" class="bundle-button" style="margin-top: 30px;">
+    Zurück zum Dashboard
+</a>
+
+{% endblock %}

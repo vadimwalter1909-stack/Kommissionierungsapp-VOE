@@ -1,9 +1,14 @@
-LADUNGSTRAEGER = [
-    {"id": "LT01", "name": "Wagen Halle 3"},
-    {"id": "LT02", "name": "Wagen Halle 6"},
-    {"id": "LT03", "name": "Systemfundamente Halle 3"},
-    {"id": "LT04", "name": "WAOI - 1 -Halle 1"},
-    {"id": "LT05", "name": "WAOI - 2 -Halle 1"},
-    {"id": "LT06", "name": "DERDOA - 1 -Halle 6"},
-    {"id": "LT07", "name": "DERDOA - 2 Halle 5 oben"},
-]
+import json
+import os
+
+FILE = "produktion_ladungstraeger.json"
+
+def load_ladungstraeger():
+    if not os.path.exists(FILE):
+        return []
+    with open(FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def save_ladungstraeger(data):
+    with open(FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)

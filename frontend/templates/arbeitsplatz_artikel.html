@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Arbeitsplatz‑Artikel verwalten</h2>
+
+<!-- Artikel hinzufügen -->
+<form method="post" action="/arbeitsplatz-artikel/add"
+      style="margin-top:20px; display:flex; gap:10px;">
+    <input type="text" name="artikel" placeholder="Artikel eingeben" required
+           style="flex:1; padding:10px; font-size:16px; border-radius:6px; border:1px solid #ccc;">
+    <button type="submit" class="btn btn-primary">Hinzufügen</button>
+</form>
+
+<h3 style="margin-top:30px;">Gespeicherte Artikel:</h3>
+
+{% if artikel|length == 0 %}
+    <p>Noch keine Artikel eingetragen.</p>
+{% else %}
+<ul style="list-style:none; padding-left:0; margin-top:15px;">
+    {% for a in artikel %}
+    <li style="
+        margin-bottom:10px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        background:#f3f4f6;
+        padding:10px 14px;
+        border-radius:6px;
+    ">
+        <span>{{ a }}</span>
+
+        <!-- Löschen -->
+        <form method="post" action="/arbeitsplatz-artikel/delete" style="margin:0;">
+            <input type="hidden" name="artikel" value="{{ a }}">
+            <button type="submit"
+                    style="background:#dc2626; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">
+                Löschen
+            </button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% endblock %}

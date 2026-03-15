@@ -9,67 +9,92 @@
         align-items: center;
         height: calc(100vh - 80px);
         padding: 20px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf3 100%);
     }
 
     .login-card {
         background: #ffffff;
-        padding: 32px;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        padding: 40px 32px;
+        border-radius: 14px;
+        box-shadow: 0 6px 28px rgba(0,0,0,0.10);
         width: 100%;
         max-width: 380px;
         text-align: center;
+        animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     .login-title {
-        font-size: 1.6rem;
-        font-weight: 600;
-        margin-bottom: 8px;
-        color: #333;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: #222;
+        letter-spacing: -0.5px;
     }
 
     .login-subtitle {
-        font-size: 0.95rem;
+        font-size: 1rem;
         color: #666;
-        margin-bottom: 24px;
+        margin-bottom: 28px;
     }
 
     .login-input {
         width: 100%;
-        padding: 12px 14px;
+        padding: 14px 16px;
         font-size: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        margin-bottom: 16px;
+        border: 1px solid #d0d0d0;
+        border-radius: 10px;
+        margin-bottom: 18px;
         outline: none;
-        transition: border-color 0.2s;
+        transition: all 0.2s;
+        background: #fafafa;
     }
 
     .login-input:focus {
         border-color: #0078d4;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(0,120,212,0.15);
     }
 
     .login-button {
         width: 100%;
-        padding: 12px;
-        font-size: 1rem;
+        padding: 14px;
+        font-size: 1.05rem;
         font-weight: 600;
         background: #0078d4;
         color: white;
         border: none;
-        border-radius: 8px;
+        border-radius: 10px;
         cursor: pointer;
-        transition: background 0.2s;
+        transition: background 0.2s, transform 0.1s;
     }
 
     .login-button:hover {
         background: #005fa3;
     }
 
+    .login-button:active {
+        transform: scale(0.98);
+    }
+
     .login-error {
         color: #d9534f;
         margin-bottom: 16px;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
+        background: #ffe5e5;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ffbcbc;
+    }
+
+    .login-footer {
+        margin-top: 20px;
+        font-size: 0.85rem;
+        color: #888;
     }
 </style>
 
@@ -88,11 +113,15 @@
                 type="password" 
                 name="password" 
                 class="login-input" 
-                placeholder="Passwort"
+                placeholder="Passwort eingeben"
                 autofocus
             >
-            <button class="login-button" type="submit">Weiter</button>
+            <button class="login-button" type="submit">Anmelden</button>
         </form>
+
+        <div class="login-footer">
+            © {{ year }} VOE – Logistik 
+        </div>
 
     </div>
 </div>

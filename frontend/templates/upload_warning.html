@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="section-title" style="margin-top: 20px;">Auftrag in Parkzone</h2>
+
+<div class="dashboard-mini-container">
+    <div class="dashboard-mini-tile" style="background: #fff3cd;">
+        <div class="mini-left">
+            <strong class="mini-kuerzel">
+                {{ kuerzel }} – #{{ prod_id }}
+            </strong>
+
+            <span class="mini-details">
+                Alter Start-BFT: {{ start_bft_alt }}
+            </span>
+
+            <span class="mini-details">
+                Neuer Start-BFT aus Excel: {{ start_bft_neu }}
+            </span>
+
+            <span class="mini-details" style="color: #b36b00;">
+                {{ message }}
+            </span>
+        </div>
+
+        <div class="mini-right">
+            <span class="mini-icon">⚠️</span>
+        </div>
+    </div>
+</div>
+
+<form action="/reactivate/{{ prod_id }}" method="post" style="margin-top: 20px;">
+    <input type="hidden" name="start_bft" value="{{ start_bft_neu }}">
+    <button type="submit" class="bundle-button" style="background: #28a745;">
+        Auftrag reaktivieren
+    </button>
+</form>
+
+<a href="/" class="bundle-button" style="margin-top: 10px;">Abbrechen</a>
+
+{% endblock %}

@@ -144,6 +144,12 @@
                     ⚠️ Achtung: Bestellung – möglicherweise nicht am Lager!
                 </p>
             {% endif %}
+
+            {% if g.liegt_am_arbeitsplatz %}
+                <p class="bundle-hint-arbeitsplatz">
+                    🔵 Liegt bereits am Arbeitsplatz – Kommissionierung entfällt
+                </p>
+            {% endif %}
         </div>
 
         {% if g.kritisch_fehlteil %}
@@ -186,7 +192,7 @@
                     <input type="hidden" name="row_keys" value="{{ rk }}">
                 {% endfor %}
                 <button type="submit" class="bundle-button">
-                    Kommissioniert
+                    Kommissionieren
                 </button>
             </form>
         {% endif %}
@@ -195,6 +201,18 @@
     {% endfor %}
 
 </div>
+
+<style>
+.bundle-hint-arbeitsplatz {
+    background: #dbeafe;
+    color: #1e3a8a;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-top: 8px;
+    font-weight: 600;
+    border-left: 4px solid #3b82f6;
+}
+</style>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {

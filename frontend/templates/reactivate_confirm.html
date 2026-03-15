@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="section-title" style="margin-top: 20px;">Auftrag reaktiviert</h2>
+
+<div class="dashboard-mini-container">
+    <div class="dashboard-mini-tile" style="background: #d4edda;">
+        <div class="mini-left">
+            <strong class="mini-kuerzel">
+                Auftrag {{ prod_id }} wurde erfolgreich reaktiviert.
+            </strong>
+
+            <span class="mini-details">
+                Neuer Start-BFT: {{ start_bft }}
+            </span>
+        </div>
+
+        <div class="mini-right">
+            <span class="mini-icon">✔️</span>
+        </div>
+    </div>
+</div>
+
+<a href="/" class="bundle-button" style="margin-top: 20px;">Zurück zum Dashboard</a>
+
+{% endblock %}

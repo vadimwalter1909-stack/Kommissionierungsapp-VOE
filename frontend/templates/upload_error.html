@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="section-title" style="margin-top: 20px;">Upload abgebrochen</h2>
+
+<div class="dashboard-mini-container">
+    <div class="dashboard-mini-tile" style="background: #ffdddd;">
+        <div class="mini-left">
+            <strong class="mini-kuerzel">Upload nicht möglich</strong>
+            <span class="mini-details">{{ message }}</span>
+        </div>
+        <div class="mini-right">
+            <span class="mini-icon">⚠️</span>
+        </div>
+    </div>
+</div>
+
+<a href="/" class="bundle-button" style="margin-top: 20px;">Zurück zum Dashboard</a>
+
+{% endblock %}

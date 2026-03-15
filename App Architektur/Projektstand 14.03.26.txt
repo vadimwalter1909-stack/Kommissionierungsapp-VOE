@@ -1,0 +1,180 @@
+Natürlich, Vadim — ich erstelle dir jetzt einen **klaren, vollständigen Projekt‑Prompt**, der:
+
+- **den aktuellen Stand deiner VOE‑Komm‑App beschreibt**,  
+- **alle wichtigen Module, Dateien und Funktionen erklärt**,  
+- **den Entwicklungsstand dokumentiert**,  
+- **und dich (oder mich) jederzeit wieder schnell in das Projekt einsteigen lässt**.
+
+Das ist dein persönlicher **Projekt‑Steckbrief**, den du später einfach in den Chat kopieren kannst, um mich sofort wieder auf denselben Wissensstand zu bringen.
+
+Ich halte ihn bewusst **präzise, vollständig und narrensicher**.
+
+---
+
+# 📘 **VOE – Komm‑App Projekt‑Prompt (Stand: aktuell)**
+
+## 🧩 **Projektbeschreibung**
+Die VOE‑Komm‑App ist eine **FastAPI‑basierte Web‑Applikation** zur Steuerung von:
+
+- **Produktion**
+- **Logistik**
+- **Kommissionierung**
+- **Parkzonen‑Handling**
+- **Arbeitsplatz‑Artikel (neu)**
+
+Sie nutzt:
+
+- **FastAPI** (Backend)
+- **Jinja2** (Templates)
+- **SQLite** (Datenbank)
+- **JSON‑Dateien** für Zusatzdaten
+- **Railway‑Deployment** (später)
+- **OCR‑Modul** für Etiketten‑Erkennung
+
+---
+
+## 🗂 **Wichtige Dateien & Module**
+
+### **Backend**
+```
+backend/
+ ├─ main.py                 → App‑Setup, Middleware, Routing
+ ├─ routes/
+ │    ├─ logistik.py        → Logistik‑Übersicht, Detailseite, Arbeitsplatz‑Artikel‑Routen
+ │    ├─ produktion.py      → Produktionslogik
+ │    └─ auth/              → Login‑Middleware
+ ├─ utils/
+ │    ├─ arbeitsplatz_loader.py  → NEU: lädt Arbeitsplatz‑Artikel
+ │    ├─ df_loader.py       → lädt Excel/DB‑Daten
+ │    └─ ziellagerorte.py   → Lagerorte
+ └─ data/
+      ├─ arbeitsplatz_artikel.json  → NEU: gespeicherte Arbeitsplatz‑Artikel
+      └─ weitere JSON/DB Dateien
+```
+
+---
+
+## 🖥 **Frontend (Templates)**
+
+```
+templates/
+ ├─ base.html
+ ├─ logistik.html               → Übersicht, Tagesgruppen, Kacheln, OCR‑Button, +‑Button
+ ├─ logistik_detail.html        → Detailansicht eines Auftrags
+ ├─ arbeitsplatz_artikel.html   → NEU: Verwaltung der Arbeitsplatz‑Artikel
+ └─ login.html
+```
+
+---
+
+# 🔧 **Aktuelle Features (Stand jetzt)**
+
+## ✔ Logistik‑Übersicht
+- Gruppierung nach Tagen  
+- Kacheln mit Statusfarben  
+- Parkzonen‑Handling  
+- Reaktiviert‑Badge  
+- Admin‑Löschfunktion  
+- OCR‑Button (Etikett fotografieren)  
+- **NEU: +‑Button rechts neben OCR‑Button**  
+  → führt zur Arbeitsplatz‑Artikel‑Verwaltung
+
+---
+
+## ✔ Logistik‑Detailseite
+- Gruppierung nach Artikel‑Merkmalen  
+- Anzeige von:
+  - Fehlteilen  
+  - Bestellungen  
+  - Lagerstatus  
+  - Kommissioniert / Ausgeliefert  
+- **NEU: Erkennung „liegt_am_arbeitsplatz“**  
+  → Artikel, die am Arbeitsplatz liegen, müssen nicht kommissioniert werden
+
+---
+
+## ✔ Arbeitsplatz‑Artikel (NEU)
+### Backend:
+- `load_arbeitsplatz_artikel()`  
+- `/arbeitsplatz-artikel` (GET)  
+- `/arbeitsplatz-artikel/add` (POST)  
+- `/arbeitsplatz-artikel/delete` (POST)
+
+### Frontend:
+- Liste aller Artikel  
+- Hinzufügen  
+- Löschen  
+- JSON‑Datei wird automatisch angelegt  
+- Fehlerresistent
+
+---
+
+# 📦 **Wichtige neue Datei**
+
+### `backend/utils/arbeitsplatz_loader.py`
+Lädt und speichert Arbeitsplatz‑Artikel narrensicher.
+
+---
+
+# 🧠 **Wichtige Logikpunkte**
+
+### 1. **Arbeitsplatz‑Artikel beeinflussen Logistik‑Detailseite**
+Wenn `artikel_nr` in `arbeitsplatz_artikel.json` steht:
+
+```python
+"liegt_am_arbeitsplatz": True
+```
+
+→ Kommissionierung entfällt  
+→ UI zeigt Hinweis
+
+---
+
+### 2. **+‑Button in logistik.html**
+Steht rechts neben dem OCR‑Button:
+
+```html
+<a href="/arbeitsplatz-artikel">+</a>
+```
+
+---
+
+### 3. **Login‑System**
+- Login‑Seite blockiert alle anderen Seiten, bis man eingeloggt ist  
+- Admin‑Rolle erlaubt Löschen von Aufträgen
+
+---
+
+# 🚧 **Nächste mögliche Schritte (optional)**
+
+- Artikel **bearbeiten/umbenennen**  
+- Kategorien für Arbeitsplatz‑Artikel  
+- Mengenverwaltung  
+- Auto‑Kommissionierung  
+- UI‑Verbesserungen  
+- Export‑Funktionen  
+- SQL‑Migration  
+- Mobile‑Optimierung  
+- Parkzonen‑Historie  
+
+---
+
+# 🧭 **Wie du mich später wieder abholen kannst**
+
+Kopiere einfach diesen Satz in den Chat:
+
+> **„Hier ist der Projekt‑Prompt. Bitte lade den aktuellen Stand der VOE‑Komm‑App.“**
+
+Und füge den Prompt oben ein.
+
+Dann bin ich sofort wieder auf deinem Stand und wir können **nahtlos weiterentwickeln**.
+
+---
+
+Wenn du willst, kann ich dir auch:
+
+- eine **Roadmap** erstellen  
+- eine **To‑Do‑Liste**  
+- oder eine **Architektur‑Skizze**
+
+Sag einfach Bescheid.

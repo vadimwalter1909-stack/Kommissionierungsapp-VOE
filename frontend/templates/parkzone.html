@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Wrapper, damit wir Parkzone gezielt stylen können -->
+<div class="parkzone-page">
+
+<nav class="app-nav">
+    <div class="nav-left">
+        <a href="/logistik" class="nav-back">←</a>
+        <span class="nav-title">Parkzone</span>
+    </div>
+</nav>
+
+<div class="tile-container">
+    {% for t in tiles %}
+    <div class="tile tile-blue">
+        <div class="tile-header">
+            🅿️ {{ t.kuerzel }} ({{ t.prod_id }})
+        </div>
+        <div class="tile-subtitle">
+            Start‑BFT: {{ t.start_bft }}
+        </div>
+
+        <form method="post" action="/parkzone/reaktivieren">
+            <input type="hidden" name="kuerzel" value="{{ t.kuerzel }}">
+            <input type="hidden" name="prod_id" value="{{ t.prod_id }}">
+            <input type="hidden" name="start_bft" value="{{ t.start_bft }}">
+            <button class="tile-button tile-button-green">Reaktivieren</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+
+</div> <!-- parkzone-page -->
+
+{% endblock %}

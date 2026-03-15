@@ -1,0 +1,162 @@
+⭐ VOE – Projekt‑Prompt (aktueller Stand, März 2026)
+Projektname:  
+VOE – Kommissionierungs‑ und Produktionssteuerungs‑App (FastAPI + Jinja2 + SQLite)
+
+Ziel:  
+Eine narrensichere, produktionsreife Web‑App zur Steuerung von Produktion, Logistik, Parkzone, Upload‑Workflows und täglichen Exporten.
+
+🔐 Authentifizierung & Rollen
+Login‑Pflicht für alle Seiten außer /login und /static.
+
+Zwei Rollen:
+
+user
+
+admin
+
+Login erfolgt über ein einziges Passwortfeld.
+
+Passwörter stehen nicht im Code, sondern in .env:
+
+APP_PASSWORD=...
+
+ADMIN_PASSWORD=...
+
+.env wird in main.py über load_dotenv() geladen.
+
+.env ist in .gitignore eingetragen.
+
+🔒 Session‑System
+Cookies:
+
+voe_auth → Login‑Status
+
+voe_role → Rolle
+
+voe_last_activity → Zeitstempel der letzten Aktivität
+
+Session‑Timeout:
+
+automatischer Logout nach 60 Minuten Inaktivität
+
+Timeout wird in AuthMiddleware geprüft
+
+Bei Timeout werden alle Cookies gelöscht
+
+Bei jeder Anfrage wird voe_last_activity aktualisiert.
+
+🧱 Middleware
+AuthMiddleware (zentraler Schutz)
+Lässt /login und /static durch.
+
+Prüft:
+
+ob eingeloggt
+
+ob Session abgelaufen
+
+Aktualisiert Aktivität.
+
+Leitet bei Fehlern auf /login um.
+
+add_role Middleware
+Setzt request.state.role für Templates.
+
+🧩 Routing
+Alle Router sind registriert:
+
+auth_router (Login, Logout)
+
+dashboard_router
+
+produktion_router
+
+logistik_router
+
+upload_router
+
+daily_export_router
+
+export_router
+
+logistik_produktionssignal_router
+
+ocr_router (unter /api)
+
+reaktivieren_router
+
+test_router
+
+🎨 Frontend / Templates
+Jinja2 Templates unter frontend/templates
+
+Static Files unter frontend/static
+
+Modernisierte Login‑Seite:
+
+klare Typografie
+
+moderne Card
+
+Fehleranzeige
+
+Branding
+
+base.html enthält:
+
+Navigation (Dashboard, Produktion, Logistik, Parkzone, Logout)
+
+Admin‑Badge oben rechts:
+
+„🔐 Admin‑Modus aktiv“
+
+erscheint nur bei role == "admin"
+
+Kein Badge und keine Navigation auf /login
+
+🧠 Admin‑Modus
+Admin‑Login zeigt Badge
+
+Admin sieht zusätzliche Funktionen (z. B. Löschen)
+
+Admin‑Status wird über Cookie gesteuert
+
+🗄 Datenbank
+SQLite über SQLAlchemy
+
+Base.metadata.create_all() wird in main.py ausgeführt
+
+📦 Deployment
+ENV‑Variable ENV steuert HTTPS‑Redirect
+
+In Produktion wird HTTPSRedirectMiddleware aktiviert
+
+🧪 Aktueller Status
+Login funktioniert
+
+Admin‑Modus funktioniert
+
+Admin‑Badge funktioniert
+
+Timeout funktioniert
+
+Passwörter ausgelagert
+
+Middleware ist sauber
+
+Navigation ist korrekt
+
+Login‑Seite ist modernisiert
+
+Root‑Route wird durch Middleware geschützt
+
+⭐ Wie du mich mit diesem Prompt wieder aktivierst
+Sag einfach:
+
+„Hier ist der Projekt‑Prompt, bitte lade ihn.“
+
+oder
+
+„Starte mit dem VOE‑Projekt‑Prompt.“
+
+Ich lade dann alles wieder in meinen Kontext und arbeite nahtlos weiter.
