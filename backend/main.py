@@ -56,7 +56,9 @@ app = FastAPI()
 if os.getenv("RAILWAY_ENVIRONMENT") == "production":
     app.add_middleware(HTTPSRedirectMiddleware)
 
-Proxy-Header aktivieren (Railway Reverse Proxy)
+# ---------------------------------------------------------
+# Proxy-Header aktivieren (Railway Reverse Proxy)
+# ---------------------------------------------------------
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 # ---------------------------------------------------------
@@ -105,3 +107,11 @@ app.include_router(admin_router)
 # ---------------------------------------------------------
 from backend.database_base import SessionLocal
 from backend.database import Item
+
+# ---------------------------------------------------------
+# Uvicorn-Start für Railway
+# ---------------------------------------------------------
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
