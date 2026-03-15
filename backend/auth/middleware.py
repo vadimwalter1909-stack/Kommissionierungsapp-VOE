@@ -10,7 +10,9 @@ from backend.auth.session import (
 
 PUBLIC_PATHS = [
     "/login",
+    "/logout",
     "/static",
+    "/favicon.ico",
 ]
 
 
