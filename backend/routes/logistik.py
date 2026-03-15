@@ -71,7 +71,6 @@ def logistik_overview(request: Request):
 
             # Prozess abgeschlossen?
             # ⭐ Reaktivierte Aufträge trotzdem anzeigen!
-            # (Reaktiviert wird weiter unten ermittelt)
             df_all = df[(df["kuerzel"] == kuerzel) & (df["prod_id"] == prod_id)]
             reaktiviert = False
             if "reaktiviert" in df.columns:
@@ -80,7 +79,6 @@ def logistik_overview(request: Request):
             # Wenn Auftrag fertig ist → IMMER ausblenden
             if is_done(kuerzel, prod_id, start_bft):
                 continue
-
 
             # Nur Logistik-relevante Zeilen
             df_k = df[
@@ -128,7 +126,7 @@ def logistik_overview(request: Request):
                 "produktion_fertig": True,
                 "start_bft": start_bft,
                 "reaktiviert": reaktiviert,
-                "verschoben": False   # ⭐ wichtig für HTML
+                "verschoben": False
             })
 
         # Sortierung: Reaktivierte oben
@@ -142,12 +140,31 @@ def logistik_overview(request: Request):
             )
         )
 
+    # ---------------------------------------------------------
+    # PRODUKTIONS-KACHELN (Ladungsträger aus Produktion)
+    # ---------------------------------------------------------
+    state = load_state()
+    lt_list = load_ladungstraeger()
+
+    prod_tiles = []
+    for lt in lt_list:
+        lt_id = lt["id"]
+        if state.get(lt_id) == "fertig":
+            prod_tiles.append({
+                "id": lt_id,
+                "name": lt["name"],
+                "status": "fertig",
+                "icon": "🚚",
+            })
+
+    prod_tiles = sorted(prod_tiles, key=lambda x: int(x["id"].replace("LT", "")))
+
     return request.app.state.templates.TemplateResponse(
         "logistik.html",
         {
             "request": request,
             "tiles": tiles or [],
-            "prod_tiles": []
+            "prod_tiles": prod_tiles or []
         }
     )
 

@@ -2,9 +2,12 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.responses import RedirectResponse
 import os
+
+# HTTPS + Proxy
+from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
+from starlette.middleware.proxy_headers import ProxyHeadersMiddleware
 
 # 🔐 .env laden
 from dotenv import load_dotenv
@@ -43,15 +46,18 @@ from backend.routes.admin_router import router as admin_router
 Base.metadata.create_all(bind=engine)
 
 # ---------------------------------------------------------
-# App erstellen + ENV bestimmen
+# App erstellen
 # ---------------------------------------------------------
 app = FastAPI()
 
-ENV = os.getenv("ENV", "development")
-
-# HTTPS nur in Produktion aktivieren
-if ENV == "production":
+# ---------------------------------------------------------
+# HTTPS nur in Railway aktivieren
+# ---------------------------------------------------------
+if os.getenv("RAILWAY_ENVIRONMENT") == "production":
     app.add_middleware(HTTPSRedirectMiddleware)
+
+# Proxy-Header aktivieren (Railway Reverse Proxy)
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 # ---------------------------------------------------------
 # Templates & Static
