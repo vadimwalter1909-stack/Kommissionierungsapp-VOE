@@ -10,9 +10,6 @@ from backend.database import Item, CompletedToday
 router = APIRouter()
 
 
-# ---------------------------------------------------------
-# Hilfsfunktion: Werte narrensicher normalisieren
-# ---------------------------------------------------------
 def norm(value):
     if value is None:
         return ""
@@ -29,42 +26,36 @@ async def upload_excel(request: Request, file: UploadFile = File(...)):
 
     db = SessionLocal()
 
-    # ---------------------------------------------------------
-    # 1) Dashboard leeren (Tagesübersicht)
-    # ---------------------------------------------------------
+    # 1) Dashboard leeren
     db.query(CompletedToday).delete()
     db.commit()
 
-    # ---------------------------------------------------------
     # 2) Nur vollständig abgeschlossene Items löschen
-    # ---------------------------------------------------------
     db.query(Item).filter(Item.ausgeliefert == True).delete()
     db.commit()
 
-    # ---------------------------------------------------------
-    # 3) Fehler- und Warnlisten
-    # ---------------------------------------------------------
-    errors = []     # echte Duplikate → Upload blockiert
-    warnings = []   # Parkzone → Reaktivierung nötig
+    errors = []
+    warnings = []
 
-    # ---------------------------------------------------------
-    # 4) Neue Items aus Excel hinzufügen
-    # ---------------------------------------------------------
+    # 3) Neue Items aus Excel hinzufügen
     for _, row in df.iterrows():
 
-        # ⭐ Alle Felder narrensicher normalisieren
         prod_id = norm(row.get("prod_id"))
         kuerzel = norm(row.get("kuerzel"))
         start_bft = norm(row.get("start_bft"))
         artikel_nr = norm(row.get("artikel_nr"))
-        start_bew = norm(row.get("start_bew"))
+
+        # 🔥 WICHTIG:
+        # Bew.-Artikel ≠ Start Bew.
+        bew_artikel = norm(row.get("bew_artikel"))   # z.B. B500B-K07
+        start_bew = norm(row.get("start_bew"))       # echtes Start-Bew.-Datum / Wert
 
         durchmesser = norm(row.get("durchmesser"))
         laenge = norm(row.get("laenge"))
         biegung = norm(row.get("biegung"))
         menge = norm(row.get("menge"))
 
-        # ⭐ Erweiterter merge_key – jede Zeile eindeutig
+        # merge_key bleibt unverändert
         merge_key = (
             f"{prod_id}|"
             f"{kuerzel}|"
@@ -76,21 +67,15 @@ async def upload_excel(request: Request, file: UploadFile = File(...)):
             f"{menge}"
         )
 
-        # ---------------------------------------------------------
-        # B) Prüfen, ob Auftrag (ProdID) bereits existiert
-        #    → Parkzone hat VORRANG vor merge_key
-        # ---------------------------------------------------------
+        # Prüfen, ob Auftrag existiert
         existing_items_same_prod = db.query(Item).filter(Item.prod_id == prod_id).all()
 
         if existing_items_same_prod:
-
-            # ⭐ B1: Auftrag ist vollständig in Parkzone → automatische Reaktivierung
+            # Auftrag komplett in Parkzone → reaktivieren
             if all(i.verschoben for i in existing_items_same_prod):
-
-                # → Alle alten Items aus Parkzone holen
                 for old in existing_items_same_prod:
                     old.verschoben = False
-                    old.reaktiviert = True  # ⭐ WICHTIG: Flag setzen
+                    old.reaktiviert = True
 
                 db.commit()
 
@@ -102,17 +87,7 @@ async def upload_excel(request: Request, file: UploadFile = File(...)):
                     "reason": "Auftrag wurde automatisch aus der Parkzone reaktiviert."
                 })
 
-                # → KEIN continue!
-                # Upload fährt fort und legt neue Positionen an
-
-            # ⭐ B2: Auftrag existiert, ist aber NICHT in Parkzone
-            # → neue Positionen sind erlaubt
-            # → merge_key entscheidet später
-
-        # ---------------------------------------------------------
-        # A) Prüfen, ob diese Position (merge_key) bereits existiert
-        #    (nur wenn Auftrag NICHT in Parkzone ist)
-        # ---------------------------------------------------------
+        # Prüfen, ob Position existiert
         existing_item = db.query(Item).filter(Item.merge_key == merge_key).first()
 
         if existing_item:
@@ -123,14 +98,11 @@ async def upload_excel(request: Request, file: UploadFile = File(...)):
             })
             continue
 
-        # ---------------------------------------------------------
-        # C) Position neu anlegen
-        # ---------------------------------------------------------
+        # Neue Position anlegen
         item = Item()
         db.add(item)
         db.flush()
 
-        # ⭐ merge_key setzen
         item.merge_key = merge_key
 
         item.fertig = False
@@ -140,9 +112,12 @@ async def upload_excel(request: Request, file: UploadFile = File(...)):
         item.kuerzel = kuerzel
         item.prod_id = prod_id
         item.artikel_nr = artikel_nr
-        item.artikel_clean = norm(row.get("artikel_clean"))
 
-        # numerische Felder sicher casten
+        # 🔥 KORREKT:
+        # Bew.-Artikel → artikel_clean
+        item.artikel_clean = bew_artikel
+
+        # numerische Felder
         item.durchmesser = float(row.get("durchmesser", 0) or 0)
         item.laenge = float(row.get("laenge", 0) or 0)
         item.biegung = norm(row.get("biegung"))
@@ -153,15 +128,15 @@ async def upload_excel(request: Request, file: UploadFile = File(...)):
         item.beschaffung = norm(row.get("beschaffung"))
         item.referenz = norm(row.get("referenz"))
 
+        # 🔥 KORREKT:
+        # Start-BFT bleibt Start-BFT
+        # Start-Bew bleibt Start-Bew
         item.start_bft = start_bft
         item.start_bew = start_bew
 
     db.commit()
     db.close()
 
-    # ---------------------------------------------------------
-    # 5) Wenn Fehler oder Warnungen → Übersicht anzeigen
-    # ---------------------------------------------------------
     if errors or warnings:
         return request.app.state.templates.TemplateResponse(
             "upload_summary.html",
@@ -172,8 +147,5 @@ async def upload_excel(request: Request, file: UploadFile = File(...)):
             }
         )
 
-    # ---------------------------------------------------------
-    # 6) Wenn alles ok → normal redirecten
-    # ---------------------------------------------------------
     timestamp = datetime.now().strftime("%H:%M")
     return RedirectResponse(f"/?upload_success=1&timestamp={timestamp}", status_code=303)
