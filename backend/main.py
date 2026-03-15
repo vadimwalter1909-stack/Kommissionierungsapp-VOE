@@ -5,10 +5,6 @@ from pathlib import Path
 from fastapi.responses import RedirectResponse
 import os
 
-# HTTPS + Proxy
-from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
-
-
 # 🔐 .env laden
 from dotenv import load_dotenv
 load_dotenv()
@@ -51,12 +47,6 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 # ---------------------------------------------------------
-# HTTPS nur in Railway aktivieren
-# ---------------------------------------------------------
-if os.getenv("RAILWAY_ENVIRONMENT") == "production":
-    app.add_middleware(HTTPSRedirectMiddleware)
-
-# ---------------------------------------------------------
 # Templates & Static
 # ---------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent
@@ -96,12 +86,6 @@ app.include_router(logistik_produktionssignal_router)
 app.include_router(ocr_router, prefix="/api")
 app.include_router(reaktivieren_router)
 app.include_router(admin_router)
-
-# ---------------------------------------------------------
-# DEBUG: Items eines Kürzels anzeigen
-# ---------------------------------------------------------
-from backend.database_base import SessionLocal
-from backend.database import Item
 
 # ---------------------------------------------------------
 # Uvicorn-Start für Railway
