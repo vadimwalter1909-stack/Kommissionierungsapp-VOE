@@ -11,3 +11,4 @@ easyocr
 opencv-python-headless
 numpy
 pillow
+starlette>=0.27.0
