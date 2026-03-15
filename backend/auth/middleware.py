@@ -8,7 +8,9 @@ from backend.auth.session import (
     clear_session
 )
 
+# WICHTIG: "/" muss erlaubt sein, sonst entsteht ein Redirect-Loop
 PUBLIC_PATHS = [
+    "/",
     "/login",
     "/logout",
     "/static",
