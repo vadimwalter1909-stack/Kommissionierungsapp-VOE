@@ -5,12 +5,7 @@
 {% set back_url = None %}
 
 <!-- OCR START -->
-<div style="
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-">
+<div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between;">
     <div>
         <input type="file" id="etikettFoto" accept="image/*" capture="environment" style="display:none;">
         <button class="btn btn-primary" onclick="document.getElementById('etikettFoto').click();">
@@ -19,41 +14,23 @@
     </div>
 
     <a href="/arbeitsplatz-artikel"
-       style="
-           display:inline-block;
-           padding:6px 14px;
-           font-size:24px;
-           font-weight:bold;
-           background:#3b82f6;
-           color:white;
-           border-radius:6px;
-           text-decoration:none;
-           line-height:1;
-           cursor:pointer;
-       ">
-       +
+       style="display:inline-block; padding:6px 14px; font-size:24px; font-weight:bold;
+              background:#3b82f6; color:white; border-radius:6px; text-decoration:none;">
+        +
     </a>
 </div>
 <!-- OCR END -->
 
 <!-- LOGISTIK-EXPORT -->
-<div style="margin-bottom: 20px; text-align: right;">
+<div style="margin-bottom:20px; text-align:right;">
     <a href="/export/logistik"
-       style="
-           display:inline-block;
-           padding:8px 14px;
-           background:#007bff;
-           color:white;
-           border-radius:6px;
-           text-decoration:none;
-           font-weight:600;
-       ">
-       📤 Logistik-Export
+       style="display:inline-block; padding:8px 14px; background:#007bff;
+              color:white; border-radius:6px; text-decoration:none; font-weight:600;">
+        📤 Logistik-Export
     </a>
 </div>
 
-<!-- PRODUKTIONS-LADUNGSTRÄGER -->
-<h2 class="section-title" style="margin-top: 20px;">
+<h2 class="section-title" style="margin-top:20px;">
     Fertige Ladungsträger aus der Produktion
 </h2>
 
@@ -76,12 +53,11 @@
 </div>
 {% endif %}
 
-<!-- LEGENDE -->
 <div class="legend">
-    <div class="legend-item"><span class="legend-box tile-rot"></span>Kritisch- evtl. Fehlteil</div>
-    <div class="legend-item"><span class="legend-box tile-grau"></span>Offen - muss kommissioniert werden</div>
-    <div class="legend-item"><span class="legend-box tile-gelb"></span>Angefangen - nicht fertig!</div>
-    <div class="legend-item"><span class="legend-box tile-hellgruen"></span>Bereit zur Auslieferung</div>
+    <div class="legend-item"><span class="legend-box tile-rot"></span>Kritisch</div>
+    <div class="legend-item"><span class="legend-box tile-grau"></span>Offen</div>
+    <div class="legend-item"><span class="legend-box tile-gelb"></span>In Arbeit</div>
+    <div class="legend-item"><span class="legend-box tile-hellgruen"></span>Bereit</div>
 </div>
 
 {% if tiles|length == 0 %}
@@ -116,17 +92,14 @@
         <div class="tile-container">
             {% for tile in items %}
             <a href="/logistik/{{ tile.kuerzel }}/{{ tile.prod_id }}?start_bft={{ tile.start_bft }}"
-               class="tile tile-link tile-{{ tile.status }}"
-               style="position:relative;">
+               class="tile tile-link tile-{{ tile.status }}">
 
                 {% if tile.reaktiviert %}
                 <span class="badge-reaktiviert">Reaktiviert</span>
                 {% endif %}
 
                 <div class="tile-left">
-                    <h2 class="tile-title">
-                        {{ tile.kuerzel }} – <span class="prodid">#{{ tile.prod_id }}</span>
-                    </h2>
+                    <h2 class="tile-title">{{ tile.kuerzel }} – <span class="prodid">#{{ tile.prod_id }}</span></h2>
                     <div class="text-sm text-gray-500">
                         Start: {{ tile.start_bft }}<br>
                         Artikel-Nr: {{ tile.artikel_nr }}
@@ -137,10 +110,8 @@
                     <span class="tile-icon">{{ tile.icon }}</span>
                 </div>
 
-                <form method="post"
-                      action="/logistik/verschieben"
-                      class="tile-park-form"
-                      onclick="event.stopPropagation();">
+                <form method="post" action="/logistik/verschieben"
+                      class="tile-park-form" onclick="event.stopPropagation();">
                     <input type="hidden" name="kuerzel" value="{{ tile.kuerzel }}">
                     <input type="hidden" name="prod_id" value="{{ tile.prod_id }}">
                     <input type="hidden" name="start_bft" value="{{ tile.start_bft }}">
@@ -150,20 +121,16 @@
             </a>
             {% endfor %}
         </div>
-
     </div>
 </div>
 {% endfor %}
 {% endif %}
 
-<!-- OCR START: Popup Modal -->
+<!-- OCR MODAL -->
 <div id="ocrModal" class="modal-overlay" style="display:none;">
     <div class="modal-box">
         <h2>Etikett erkannt</h2>
-
-        <div id="ocrData" style="margin-top: 15px; text-align:left;">
-        </div>
-
+        <div id="ocrData"></div>
         <div class="modal-buttons">
             <button id="confirmOcr" class="btn-primary">Kommissionierung starten</button>
             <button id="cancelOcr" class="btn-secondary">Abbrechen</button>
@@ -171,50 +138,46 @@
     </div>
 </div>
 
+<style>
+.tile { position:relative; padding-bottom:36px; }
+.tile-park-form { position:absolute; right:8px; bottom:8px; }
+.tile-park-button { background:none; border:none; font-size:22px; cursor:pointer; }
+
+.day-header { cursor:pointer; user-select:none; z-index:5;
+    display:flex; justify-content:space-between;
+    background:#f2f2f2; padding:8px 12px; border-radius:6px; }
+
+.badge-reaktiviert {
+    position:absolute; top:6px; right:6px;
+    background:#3b82f6; color:white;
+    padding:3px 8px; border-radius:6px; font-size:0.75rem;
+}
+</style>
+
 <script>
-document.getElementById("etikettFoto").addEventListener("change", async function() {
-    const file = this.files[0];
-    if (!file) return;
+function toggleDay(day) {
+    const content = document.getElementById("day-" + day);
+    const arrow = document.getElementById("arrow-" + day);
+    if (!content || !arrow) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
+    const open = content.style.display === "block";
+    content.style.display = open ? "none" : "block";
+    arrow.textContent = open ? "▶" : "▼";
+}
 
-    const res = await fetch("/api/ocr/etikett", {
-        method: "POST",
-        body: formData
+// Scroll merken
+document.querySelectorAll(".tile-link").forEach(link => {
+    link.addEventListener("click", () => {
+        sessionStorage.setItem("logistikScroll", window.scrollY);
     });
+});
 
-    let data;
-    try {
-        data = await res.json();
-    } catch (e) {
-        document.getElementById("ocrData").innerHTML =
-            "<p><b>Fehler:</b> Antwort ist kein JSON.</p>";
-        document.getElementById("ocrModal").style.display = "flex";
-        return;
+// Scroll restaurieren (verzögert!)
+window.addEventListener("load", () => {
+    const pos = sessionStorage.getItem("logistikScroll");
+    if (pos !== null) {
+        setTimeout(() => window.scrollTo(0, Number(pos)), 50);
     }
-
-    document.getElementById("ocrData").innerHTML =
-        `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-    document.getElementById("ocrModal").style.display = "flex";
-
-    document.getElementById("confirmOcr").onclick = async () => {
-        await fetch("/api/kommissionieren", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                kuerzel: data.kuerzel,
-                bft: data.bft
-            })
-        });
-
-        document.getElementById("ocrModal").style.display = "none";
-        location.reload();
-    };
-
-    document.getElementById("cancelOcr").onclick = () => {
-        document.getElementById("ocrModal").style.display = "none";
-    };
 });
 </script>
 
