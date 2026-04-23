@@ -54,6 +54,7 @@ TEMPLATES_DIR = BASE_DIR.parent / "frontend" / "templates"
 STATIC_DIR = BASE_DIR.parent / "frontend" / "static"
 
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+templates.env.cache = {}  # ✅ WICHTIG: Jinja2-Cache deaktivieren
 app.state.templates = templates
 
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
