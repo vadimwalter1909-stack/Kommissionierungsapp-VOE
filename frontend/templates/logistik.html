@@ -106,7 +106,7 @@
     <div class="day-header" onclick="toggleDay('{{ day }}')">
         📅 {{ day }}
         <span id="arrow-{{ day }}" class="day-arrow">
-            {% if loop.first %} ▼ {% else %} ▶ {% endif %}
+            {% if loop.first %}▼{% else %}▶{% endif %}
         </span>
     </div>
 
@@ -128,26 +128,22 @@
                         {{ tile.kuerzel }} – <span class="prodid">#{{ tile.prod_id }}</span>
                     </h2>
                     <div class="text-sm text-gray-500">
-                        Start: {{ tile.start_bft }}
-                    </div>
-                    </div> class="text-sm text-gray-500">
+                        Start: {{ tile.start_bft }}<br>
                         Artikel-Nr: {{ tile.artikel_nr }}
+                    </div>
                 </div>
 
                 <div class="tile-right">
                     <span class="tile-icon">{{ tile.icon }}</span>
                 </div>
 
-                <!-- 🅿️ Button unten rechts -->
                 <form method="post"
                       action="/logistik/verschieben"
                       class="tile-park-form"
                       onclick="event.stopPropagation();">
-
                     <input type="hidden" name="kuerzel" value="{{ tile.kuerzel }}">
                     <input type="hidden" name="prod_id" value="{{ tile.prod_id }}">
                     <input type="hidden" name="start_bft" value="{{ tile.start_bft }}">
-
                     <button type="submit" class="tile-park-button">🅿️</button>
                 </form>
 
@@ -159,115 +155,6 @@
 </div>
 {% endfor %}
 {% endif %}
-
-<style>
-.tile { position: relative; }
-
-.tile-park-form {
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-}
-
-.tile-park-button {
-    background: none;
-    border: none;
-    font-size: 22px;
-    cursor: pointer;
-}
-
-.badge-reaktiviert {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    background: #3b82f6;
-    color: white;
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-</style>
-
-<script>
-function toggleDay(day) {
-    const content = document.getElementById("day-" + day);
-    const arrow = document.getElementById("arrow-" + day);
-    const visible = content.style.display === "block";
-
-    content.style.display = visible ? "none" : "block";
-    arrow.textContent = visible ? "▶" : "▼";
-}
-
-/* Scroll-Position merken */
-document.querySelectorAll(".tile-link").forEach(el => {
-    el.addEventListener("click", () => {
-        sessionStorage.setItem("logistikScroll", window.scrollY);
-    });
-});
-
-/* Scroll wiederherstellen */
-window.addEventListener("load", () => {
-    const pos = sessionStorage.getItem("logistikScroll");
-    if (pos !== null) {
-        window.scrollTo(0, Number(pos));
-    }
-});
-</script>
-
-{% endblock %}
-
-<style>
-.day-header {
-    font-size: 20px;
-    font-weight: 600;
-    margin-top: 25px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    background: #f2f2f2;
-    padding: 8px 12px;
-    border-radius: 6px;
-}
-
-.day-arrow {
-    font-size: 20px;
-}
-
-.tile-reaktiviert {
-    border: 3px solid #3b82f6 !important;
-    background: #dbeafe !important;
-}
-
-.badge-reaktiviert {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    background: #3b82f6;
-    color: white;
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    z-index: 10;
-}
-</style>
-
-<script>
-function toggleDay(day) {
-    const content = document.getElementById("day-" + day);
-    const arrow = document.getElementById("arrow-" + day);
-
-    if (content.style.display === "none") {
-        content.style.display = "block";
-        arrow.textContent = "▼";
-    } else {
-        content.style.display = "none";
-        arrow.textContent = "▶";
-    }
-}
-</script>
 
 <!-- OCR START: Popup Modal -->
 <div id="ocrModal" class="modal-overlay" style="display:none;">
@@ -301,12 +188,14 @@ document.getElementById("etikettFoto").addEventListener("change", async function
     try {
         data = await res.json();
     } catch (e) {
-        document.getElementById("ocrData").innerHTML = "<p><b>Fehler:</b> Antwort ist kein JSON.</p>";
+        document.getElementById("ocrData").innerHTML =
+            "<p><b>Fehler:</b> Antwort ist kein JSON.</p>";
         document.getElementById("ocrModal").style.display = "flex";
         return;
     }
 
-    document.getElementById("ocrData").innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+    document.getElementById("ocrData").innerHTML =
+        `<pre>${JSON.stringify(data, null, 2)}</pre>`;
     document.getElementById("ocrModal").style.display = "flex";
 
     document.getElementById("confirmOcr").onclick = async () => {
