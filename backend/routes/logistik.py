@@ -335,8 +335,12 @@ def parkzone_overview(request: Request):
             })
 
     return request.app.state.templates.TemplateResponse(
-        "parkzone.html",
-        {"request": request, "tiles": tiles or []}
+        request=request,
+        name="parkzone.html",
+        context={
+            "request": request,
+            "tiles": tiles or [],
+        },
     )
 
 
