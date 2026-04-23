@@ -127,7 +127,7 @@
 
             <div class="tile-container">
                 {% for tile in items %}
-                <a href="{{ request.base_url }}logistik/{{ tile.kuerzel }}/{{ tile.prod_id }}?start_bft={{ tile.start_bft }}"
+                <a href="/logistik/{{ tile.kuerzel }}/{{ tile.prod_id }}?start_bft={{ tile.start_bft }}"
                     class="tile tile-{{ tile.status }} 
                         {% if tile.verschoben | default(false) %} tile-parkzone tile-parkzone-bg {% endif %}
                         {% if tile.reaktiviert | default(false) %} tile-reaktiviert {% endif %}"
