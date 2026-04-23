@@ -52,16 +52,16 @@ def dashboard(request: Request):
         key=lambda e: (e.kuerzel, e.start_bft or "", e.timestamp)
     )
 
-    # ✅ WICHTIG: TemplateResponse mit KEYWORD-ARGUMENTEN
+    # ✅ WICHTIG: request MUSS explizit übergeben werden
     return request.app.state.templates.TemplateResponse(
+        request=request,
         name="dashboard.html",
         context={
             "request": request,
             "entries": entries,
             "fertige_auftraege": fertige_auftraege,
-        }
+        },
     )
-
 
 # ---------------------------------------------------------
 # Alias-Route für /dashboard
