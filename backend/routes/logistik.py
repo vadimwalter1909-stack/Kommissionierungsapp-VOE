@@ -126,7 +126,8 @@ def logistik_overview(request: Request):
                 "produktion_fertig": True,
                 "start_bft": start_bft,
                 "reaktiviert": reaktiviert,
-                "verschoben": False
+                "verschoben": False,
+                "artikel_nr": df_k.iloc[0]["artikel_nr"]
             })
 
         # Sortierung: Reaktivierte oben
