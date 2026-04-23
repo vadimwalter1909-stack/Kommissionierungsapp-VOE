@@ -1,13 +1,21 @@
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
+
 from backend.database_base import SessionLocal
 from backend.database import Item
 
 router = APIRouter()
 
 
+# ---------------------------------------------------------
+# LOGISTIK – AUFTRAG REAKTIVIEREN
+# ---------------------------------------------------------
 @router.post("/reactivate/{prod_id}")
-async def reactivate_order(request: Request, prod_id: str, start_bft: str = Form(...)):
+async def reactivate_order(
+    request: Request,
+    prod_id: str,
+    start_bft: str = Form(...)
+):
     db = SessionLocal()
 
     items = db.query(Item).filter(Item.prod_id == prod_id).all()
@@ -23,11 +31,12 @@ async def reactivate_order(request: Request, prod_id: str, start_bft: str = Form
     db.commit()
     db.close()
 
+    # ✅ WICHTIG: TemplateResponse nur mit KEYWORD-ARGUMENTEN
     return request.app.state.templates.TemplateResponse(
-        "reactivate_confirm.html",
-        {
+        name="reactivate_confirm.html",
+        context={
             "request": request,
             "prod_id": prod_id,
-            "start_bft": start_bft
-        }
+            "start_bft": start_bft,
+        },
     )
