@@ -5,7 +5,7 @@ from datetime import date
 from io import BytesIO
 
 from backend.database_base import SessionLocal
-from backend.database import CompletedToday, Item
+from backend.database import CompletedToday
 
 router = APIRouter()
 
@@ -52,9 +52,10 @@ def dashboard(request: Request):
         key=lambda e: (e.kuerzel, e.start_bft or "", e.timestamp)
     )
 
+    # ✅ WICHTIG: TemplateResponse mit KEYWORD-ARGUMENTEN
     return request.app.state.templates.TemplateResponse(
-        "dashboard.html",
-        {
+        name="dashboard.html",
+        context={
             "request": request,
             "entries": entries,
             "fertige_auftraege": fertige_auftraege,
