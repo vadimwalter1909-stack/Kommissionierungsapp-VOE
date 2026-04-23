@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
+
 from backend.logic.produktion_state import load_state, save_state
 from backend.logic.ladungstraeger import load_ladungstraeger, save_ladungstraeger
 
@@ -27,19 +28,25 @@ def produktion_overview(request: Request):
             color = "grau"
             icon = "⏳"
 
-        tiles.append({
-            "id": lt_id,
-            "name": name,
-            "status": color,
-            "icon": icon
-        })
+        tiles.append(
+            {
+                "id": lt_id,
+                "name": name,
+                "status": color,
+                "icon": icon,
+            }
+        )
 
     # Sortierung nach LT-Nummer
     tiles.sort(key=lambda x: int(x["id"].replace("LT", "")))
 
+    # ✅ WICHTIG: TemplateResponse nur mit Keyword-Argumenten
     return request.app.state.templates.TemplateResponse(
-        "produktion.html",
-        {"request": request, "tiles": tiles}
+        name="produktion.html",
+        context={
+            "request": request,
+            "tiles": tiles,
+        },
     )
 
 
@@ -82,10 +89,12 @@ def produktion_add(name: str = Form(...)):
     new_id = f"LT{next_number:02d}"
 
     # neuen Ladungsträger speichern
-    lt_list.append({
-        "id": new_id,
-        "name": name
-    })
+    lt_list.append(
+        {
+            "id": new_id,
+            "name": name,
+        }
+    )
     save_ladungstraeger(lt_list)
 
     # Status initialisieren
