@@ -40,8 +40,9 @@ def produktion_overview(request: Request):
     # Sortierung nach LT-Nummer
     tiles.sort(key=lambda x: int(x["id"].replace("LT", "")))
 
-    # ✅ WICHTIG: TemplateResponse nur mit Keyword-Argumenten
+    # ✅ FIX: request MUSS explizit übergeben werden
     return request.app.state.templates.TemplateResponse(
+        request=request,
         name="produktion.html",
         context={
             "request": request,
